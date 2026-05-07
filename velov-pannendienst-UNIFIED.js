@@ -665,6 +665,9 @@ class VelovPannendienst extends HTMLElement {
     this.style.display   = 'block';
     this.style.width     = '100%';
     this.style.minHeight = '200px';
+    this.style.overflow  = 'visible';
+    this.style.position  = 'relative';
+    this.style.background = '#F5F0EB';
 
     try { window.__velovSeoHelper && window.__velovSeoHelper.injectSeo(this, this.L.seo, this.UI.faqLabel, this.UI.contactLabel); } catch(e) {}
     try { window.__velovTracker && window.__velovTracker.bind(this, this._lang); } catch(e) {}
@@ -715,7 +718,7 @@ class VelovPannendienst extends HTMLElement {
     /* ALL rules target .vp-wrap or children — NOT the custom element tag.
        This mirrors how home file works and avoids Wix shadow DOM issues. */
     s.textContent = `
-      .vp-wrap { display:block; width:100%; font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; color:#2D2B3D; box-sizing:border-box; line-height:1.6; -webkit-font-smoothing:antialiased; }
+      .vp-wrap { display:block; width:100%; min-height:200px; background:#F5F0EB; font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; color:#2D2B3D; box-sizing:border-box; line-height:1.6; -webkit-font-smoothing:antialiased; }
       .vp-wrap *, .vp-wrap *::before, .vp-wrap *::after { box-sizing:border-box; margin:0; padding:0; }
       .vp-wrap a { text-decoration:none; }
 
