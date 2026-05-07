@@ -1,11 +1,9 @@
 /* ===================================================================
    VELOV — UNIFIED Multilingual Cargo Bike Component
-   Version: 3.1 (Production Ready)
-   Languages: de · en · fr · it · es
-   Architecture: Synced with velov-home-UNIFIED.js
+   Version: 3.2 (Ultra-Safe Edition)
    =================================================================== */
 
-/* ===== 1. SHARED SEO HELPER (Singleton) ===== */
+/* ===== 1. SHARED SEO HELPER ===== */
 (function(){
   if (window.__velovSeoHelper) return;
   function safe(s){return String(s==null?'':s).replace(/[\u0000-\u001F]/g,' ');}
@@ -18,17 +16,8 @@
       h+='<section>';
       if(sec.h2) h+='<h2>'+safe(sec.h2)+'</h2>';
       if(sec.body) h+='<p>'+safe(sec.body)+'</p>';
-      if(Array.isArray(sec.h3items)) sec.h3items.forEach(function(it){
-        h+='<h3>'+safe(it.h3)+'</h3>';
-        if(it.body) h+='<p>'+safe(it.body)+'</p>';
-      });
       h+='</section>';
     });
-    if(Array.isArray(s.faqs)&&s.faqs.length){
-      h+='<section><h2>FAQ</h2>';
-      s.faqs.forEach(function(f){h+='<h3>'+safe(f.q)+'</h3><p>'+safe(f.a)+'</p>';});
-      h+='</section>';
-    }
     h+='</article>';
     return h;
   }
@@ -57,7 +46,7 @@
   window.__velovSeoHelper={injectSeo:injectSeo};
 })();
 
-/* ===== 2. SHARED TRACKER (Singleton) ===== */
+/* ===== 2. SHARED TRACKER ===== */
 (function(){
   if (window.__velovTracker) return;
   function pushEvent(name, params){
@@ -83,173 +72,143 @@
   window.__velovTracker = {bind: bind};
 })();
 
-/* ===== 3. MULTILINGUAL DATA MAP ===== */
+/* ===== 3. MULTILINGUAL DATA ===== */
 const VELOV_LANG = {
   de: {
-    seo: {
-      id: 'cargo-de', h1: 'Cargo-Bike Service Zürich – Wartung & Reparatur für Lastenräder',
-      intro: 'Mobiler Cargo-Bike Service in Zürich für alle Marken.',
-      sections: [{ h2: 'Cargo-Bike Service Zürich', body: 'Spezialisiert auf Lastenräder aller Marken.' }],
-      faqs: [{ q: 'Welche Marken?', a: 'Alle: Urban Arrow, Riese & Müller, Tern, etc.' }],
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zürich","url":"https://www.velov.ch/cargo" }]
-    },
+    seo: { id: 'cargo-de', h1: 'Cargo-Bike Service Zürich', intro: 'Mobiler Cargo-Bike Service für alle Marken.', sections: [{ h2: 'Service Zürich', body: 'Spezialisiert auf Lastenräder.' }], faqs: [{ q: 'Welche Marken?', a: 'Alle mechanisch.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zürich" }] },
     ui: {
       badge: 'Mobiler Cargo-Bike-Service · ganz Zürich',
       heroH1: 'Cargo Bike Reparatur <span class="v-grad">direkt bei dir</span> in Zürich',
-      heroSub: 'Schluss mit 40-kg-Lastenrad-Schleppen. Unsere mobile Werkstatt kommt zu dir — alle Marken, transparente Festpreise.',
+      heroSub: 'Schluss mit 40-kg-Lastenrad-Schleppen. Wir kommen zu dir — alle Marken, transparente Festpreise.',
       ctaPhone: '📞 Jetzt Termin buchen', ctaCalc: 'Preis berechnen →',
       trust: ['⭐ 4.8 / 5 Google Reviews', '🚐 Mobile Werkstatt', '🚲 Alle Cargo-Marken', '💰 Anfahrt CHF 49'],
-      whyLabel: 'Warum mobil', whyH2: 'Lastenrad-Service, der zu dir kommt', whySub: 'Cargo Bikes sind schwer und sperrig. Wir kommen mit komplettem Werkzeug direkt zu dir.',
+      whyLabel: 'Warum mobil', whyH2: 'Lastenrad-Service, der zu dir kommt', whySub: 'Cargo Bikes sind schwer. Wir kommen direkt zu dir.',
       info1T: 'Direkt bei dir', info1D: 'Kein Schleppen von 40kg+. Wir reparieren vor der Haustür.',
       info2T: 'Cargo-Spezialisten', info2D: 'Erfahrung mit 2-Rad, 3-Rad, Long-Tail und Front-Loader.',
-      info3T: 'Alle Marken', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe — alle Motoren.',
-      calcLabel: 'Kosten-Rechner', calcH2: 'Was kostet dein Cargo-Service?', calcSub: 'Wähle dein Paket und Extras — der Preis aktualisiert sich live.',
-      step1: '1. Basispaket wählen', step2: '2. Extras hinzufügen (optional)',
+      info3T: 'Alle Marken', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe.',
+      calcLabel: 'Kosten-Rechner', calcH2: 'Was kostet dein Cargo-Service?', calcSub: 'Wähle Paket und Extras — Preis live.',
+      step1: '1. Basispaket wählen', step2: '2. Extras hinzufügen',
       totalLbl: 'Dein Festpreis', totalFine: 'Anfahrt Zürich Stadt CHF 49 · Teile nach Aufwand',
-      waBtn: 'Book via WhatsApp',
-      diagLabel: 'Interaktiv', diagH2: 'Klick auf dein Cargo Bike', diagSub: 'Tippe einen Punkt an für Details.',
+      waBtn: 'WhatsApp Buchung',
+      diagLabel: 'Interaktiv', diagH2: 'Klick auf dein Cargo Bike', diagSub: 'Tippe einen Punkt an.',
       diagHint: '👆 Tippe einen orangen Punkt an',
-      sliderLabel: 'Lohnt sich das noch?', sliderH2: 'Ist dein Cargo Bike eine Reparatur wert?', sliderSub: 'Schieb den Regler passend zum Zustand.',
+      sliderLabel: 'Lohnt sich das noch?', sliderH2: 'Ist dein Cargo Bike reparaturwürdig?', sliderSub: 'Schieb den Regler passend zum Zustand.',
       sliderL1: '🌟 Neuwertig', sliderL2: '🔧 Normal genutzt', sliderL3: '⚠️ Stark beansprucht',
-      faqLabel: 'FAQ', faqH2: 'Häufige Fragen zum Cargo-Service', faqSub: 'Alles, was du wissen willst.',
+      faqLabel: 'FAQ', faqH2: 'Häufige Fragen Cargo', faqSub: 'Alles, was du wissen musst.',
       finalH2: 'Cargo Bike Service in Zürich — ohne Stress',
-      finalP: 'Wir kommen zu dir, reparieren mechanisch vor Ort. Transparente Festpreise, Anfahrt CHF 49.',
+      finalP: 'Wir kommen zu dir, reparieren mechanisch vor Ort. Anfahrt CHF 49.',
       finalBtn: 'Jetzt Cargo Service buchen',
       finalCont: 'WhatsApp · info@velov.ch · Mobile Cargo-Bike-Werkstatt Zürich',
       waMsg: 'Hi VELOV! Ich möchte meinen Cargo-Service buchen.'
     }
   },
   en: {
-    seo: {
-      id: 'cargo-en', h1: 'Cargo Bike Service Zurich – Maintenance & Repair',
-      intro: 'Mobile cargo bike service in Zurich for all brands.',
-      sections: [{ h2: 'Cargo Bike Service Zurich', body: 'Specialized in all cargo bike brands.' }],
-      faqs: [{ q: 'Which brands?', a: 'All: Urban Arrow, Riese & Müller, Tern, etc.' }],
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurich","url":"https://www.velov.ch/en/cargo" }]
-    },
+    seo: { id: 'cargo-en', h1: 'Cargo Bike Service Zurich', intro: 'Mobile cargo bike service for all brands.', sections: [{ h2: 'Service Zurich', body: 'Specialized in cargo bikes.' }], faqs: [{ q: 'Which brands?', a: 'All mechanical.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurich" }] },
     ui: {
       badge: 'Mobile Cargo Bike Service · all over Zurich',
       heroH1: 'Cargo Bike Repair <span class="v-grad">right at your door</span> in Zurich',
-      heroSub: 'Stop dragging 40kg cargo bikes. Our mobile workshop comes to you — all brands, transparent fixed prices.',
+      heroSub: 'Stop dragging 40kg bikes. Our mobile workshop comes to you — all brands, fixed prices.',
       ctaPhone: '📞 Book appointment', ctaCalc: 'Calculate price →',
       trust: ['⭐ 4.8 / 5 Google Reviews', '🚐 Mobile Workshop', '🚲 All Cargo Brands', '💰 Travel CHF 49'],
-      whyLabel: 'Why mobile', whyH2: 'Cargo service that comes to you', whySub: 'Cargo bikes are heavy and bulky. We bring all tools directly to your spot.',
-      info1T: 'Right at your door', info1D: 'No dragging 40kg+. We repair at your home or office.',
+      whyLabel: 'Why mobile', whyH2: 'Cargo service that comes to you', whySub: 'Cargo bikes are heavy. We bring all tools to you.',
+      info1T: 'Right at your door', info1D: 'No dragging 40kg+. We repair at your location.',
       info2T: 'Cargo Specialists', info2D: 'Experts in 2-wheel, 3-wheel, Long-Tail and Front-Loaders.',
-      info3T: 'All Brands', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe — all motor systems.',
-      calcLabel: 'Cost Calculator', calcH2: 'How much is your Cargo service?', calcSub: 'Pick a package and extras — price updates live.',
-      step1: '1. Choose base package', step2: '2. Add extras (optional)',
+      info3T: 'All Brands', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe.',
+      calcLabel: 'Cost Calculator', calcH2: 'How much is your Cargo service?', calcSub: 'Pick package and extras — price live.',
+      step1: '1. Choose base package', step2: '2. Add extras',
       totalLbl: 'Your Fixed Price', totalFine: 'Zurich city travel CHF 49 · Parts based on use',
-      waBtn: 'Book via WhatsApp',
+      waBtn: 'WhatsApp Booking',
       diagLabel: 'Interactive', diagH2: 'Click on your Cargo Bike', diagSub: 'Tap a point for details.',
       diagHint: '👆 Tap an orange dot',
       sliderLabel: 'Is it worth it?', sliderH2: 'Is your Cargo Bike worth repairing?', sliderSub: 'Slide to match the current condition.',
       sliderL1: '🌟 Like New', sliderL2: '🔧 Normal Use', sliderL3: '⚠️ Heavily Used',
       faqLabel: 'FAQ', faqH2: 'Cargo Service FAQ', faqSub: 'Everything you need to know.',
       finalH2: 'Cargo Bike Service in Zurich — stress-free',
-      finalP: 'We come to you and repair on-site. Transparent fixed prices, Travel CHF 49.',
+      finalP: 'We come to you and repair on-site. Travel CHF 49.',
       finalBtn: 'Book Cargo Service now',
       finalCont: 'WhatsApp · info@velov.ch · Mobile Cargo Workshop Zurich',
       waMsg: 'Hi VELOV! I would like to book a Cargo Service.'
     }
   },
   es: {
-    seo: {
-      id: 'cargo-es', h1: 'Servicio Cargo Bike Zúrich – Mantenimiento',
-      intro: 'Servicio cargo bike móvil en Zúrich para todas las marcas.',
-      sections: [{ h2: 'Servicio Cargo Bike Zúrich', body: 'Especialistas en todas las marcas de cargo bikes.' }],
-      faqs: [{ q: '¿Qué marcas?', a: 'Todas: Urban Arrow, Riese & Müller, Tern, etc.' }],
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zúrich","url":"https://www.velov.ch/es/cargo" }]
-    },
+    seo: { id: 'cargo-es', h1: 'Servicio Cargo Bike Zúrich', intro: 'Servicio cargo bike móvil para todas las marcas.', sections: [{ h2: 'Servicio Zúrich', body: 'Especialistas en cargo bikes.' }], faqs: [{ q: '¿Qué marcas?', a: 'Todas mecánicamente.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zúrich" }] },
     ui: {
       badge: 'Servicio Cargo Bike Móvil · todo Zúrich',
       heroH1: 'Reparación de Cargo Bike <span class="v-grad">directo a ti</span> en Zúrich',
-      heroSub: 'Deja de arrastrar bicis de 40kg. Nuestro taller móvil va a tu casa — todas las marcas, precios fijos.',
+      heroSub: 'Deja de arrastrar bicis de 40kg. Nuestro taller móvil va a tu casa — precios fijos.',
       ctaPhone: '📞 Reservar cita', ctaCalc: 'Calcular precio →',
       trust: ['⭐ 4.8 / 5 Google Reviews', '🚐 Taller Móvil', '🚲 Todas las marcas', '💰 Traslado CHF 49'],
-      whyLabel: 'Por qué móvil', whyH2: 'Servicio de cargo que va a tu domicilio', whySub: 'Las cargo bikes son pesadas. Llevamos todas las herramientas a tu ubicación.',
+      whyLabel: 'Por qué móvil', whyH2: 'Servicio de cargo que va a tu domicilio', whySub: 'Las cargo bikes son pesadas. Llevamos todo a tu ubicación.',
       info1T: 'Directo a ti', info1D: 'Sin cargar con 40kg+. Reparamos en tu puerta.',
       info2T: 'Especialistas Cargo', info2D: 'Expertos en 2 ruedas, 3 ruedas, Long-Tail y Front-Loaders.',
-      info3T: 'Todas las marcas', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe — todos los motores.',
+      info3T: 'Todas las marcas', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe.',
       calcLabel: 'Calculadora', calcH2: '¿Cuánto cuesta tu servicio?', calcSub: 'Elige paquete y extras — precio en vivo.',
-      step1: '1. Elegir paquete base', step2: '2. Añadir extras (opcional)',
+      step1: '1. Elegir paquete base', step2: '2. Añadir extras',
       totalLbl: 'Tu Precio Fijo', totalFine: 'Traslado Zúrich ciudad CHF 49 · Piezas según uso',
-      waBtn: 'Reservar via WhatsApp',
+      waBtn: 'Reserva WhatsApp',
       diagLabel: 'Interactivo', diagH2: 'Haz clic en tu Cargo Bike', diagSub: 'Toca un punto para detalles.',
       diagHint: '👆 Toca un punto naranja',
       sliderLabel: '¿Vale la pena?', sliderH2: '¿Vale la pena reparar tu Cargo Bike?', sliderSub: 'Desliza según el estado actual.',
       sliderL1: '🌟 Como nueva', sliderL2: '🔧 Uso normal', sliderL3: '⚠️ Muy desgastada',
       faqLabel: 'FAQ', faqH2: 'Preguntas frecuentes Cargo', faqSub: 'Todo lo que necesitas saber.',
       finalH2: 'Servicio Cargo Bike en Zúrich — sin estrés',
-      finalP: 'Vamos a ti y reparamos en el sitio. Precios fijos, Traslado CHF 49.',
+      finalP: 'Vamos a ti y reparamos en el sitio. Traslado CHF 49.',
       finalBtn: 'Reservar Servicio Cargo ahora',
       finalCont: 'WhatsApp · info@velov.ch · Taller Móvil Cargo Zúrich',
       waMsg: 'Hola VELOV! Quiero reservar un servicio de Cargo Bike.'
     }
   },
   fr: {
-    seo: {
-      id: 'cargo-fr', h1: 'Service Vélo Cargo Zurich – Entretien',
-      intro: 'Service vélo cargo mobile à Zurich pour toutes les marques.',
-      sections: [{ h2: 'Service Vélo Cargo Zurich', body: 'Spécialistes de toutes les marques de vélos cargo.' }],
-      faqs: [{ q: 'Quelles marques ?', a: 'Toutes: Urban Arrow, Riese & Müller, Tern, etc.' }],
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurich","url":"https://www.velov.ch/fr/cargo" }]
-    },
+    seo: { id: 'cargo-fr', h1: 'Service Vélo Cargo Zurich', intro: 'Service vélo cargo mobile pour toutes les marques.', sections: [{ h2: 'Service Zurich', body: 'Spécialistes vélo cargo.' }], faqs: [{ q: 'Quelles marques ?', a: 'Toutes mécaniquement.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurich" }] },
     ui: {
       badge: 'Service Vélo Cargo Mobile · tout Zurich',
       heroH1: 'Réparation Vélo Cargo <span class="v-grad">chez vous</span> à Zurich',
-      heroSub: 'Fini le transport de vélos de 40kg. Notre atelier mobile vient à vous — toutes marques, prix fixes.',
+      heroSub: 'Fini le transport de vélos de 40kg. Notre atelier mobile vient à vous — prix fixes.',
       ctaPhone: '📞 Prendre RDV', ctaCalc: 'Calculer le prix →',
       trust: ['⭐ 4.8 / 5 Avis Google', '🚐 Atelier Mobile', '🚲 Toutes marques Cargo', '💰 Trajet CHF 49'],
-      whyLabel: 'Pourquoi mobile', whyH2: 'Le service cargo qui vient à vous', whySub: 'Les vélos cargo sont lourds. Nous apportons tous les outils chez vous.',
+      whyLabel: 'Pourquoi mobile', whyH2: 'Le service cargo qui vient à vous', whySub: 'Les vélos cargo sont lourds. Nous apportons tout chez vous.',
       info1T: 'Directement chez vous', info1D: 'Pas de transport de 40kg+. On répare devant votre porte.',
       info2T: 'Spécialistes Cargo', info2D: 'Experts en 2 roues, 3 roues, Long-Tail et Front-Loaders.',
-      info3T: 'Toutes les marques', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe — tous moteurs.',
+      info3T: 'Toutes les marques', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe.',
       calcLabel: 'Calculateur', calcH2: 'Quel est le prix de votre service ?', calcSub: 'Choisissez forfait et extras — prix en direct.',
-      step1: '1. Choisir le forfait', step2: '2. Ajouter des extras (optionnel)',
+      step1: '1. Choisir le forfait', step2: '2. Ajouter des extras',
       totalLbl: 'Votre Prix Fixe', totalFine: 'Trajet Zurich ville CHF 49 · Pièces selon usage',
-      waBtn: 'Réserver via WhatsApp',
+      waBtn: 'Réserver WhatsApp',
       diagLabel: 'Interactif', diagH2: 'Cliquez sur votre Vélo Cargo', diagSub: 'Touche un point pour les détails.',
       diagHint: '👆 Touchez un point orange',
       sliderLabel: 'Est-ce rentable ?', sliderH2: 'Votre vélo cargo vaut-il la peine d\'être réparé ?', sliderSub: 'Glissez selon l\'état actuel.',
       sliderL1: '🌟 Comme neuf', sliderL2: '🔧 Usage normal', sliderL3: '⚠️ Très usé',
       faqLabel: 'FAQ', faqH2: 'FAQ Service Cargo', faqSub: 'Tout ce que vous devez savoir.',
       finalH2: 'Service Vélo Cargo à Zurich — sans stress',
-      finalP: 'Nous venons chez vous et réparons sur place. Prix fixes, Trajet CHF 49.',
+      finalP: 'Nous venons chez vous et réparons sur place. Trajet CHF 49.',
       finalBtn: 'Réserver Service Cargo maintenant',
       finalCont: 'WhatsApp · info@velov.ch · Atelier Mobile Cargo Zurich',
       waMsg: 'Bonjour VELOV ! Je souhaite réserver un service vélo cargo.'
     }
   },
   it: {
-    seo: {
-      id: 'cargo-it', h1: 'Servizio Cargo Bike Zurigo – Manutenzione',
-      intro: 'Servizio cargo bike mobile a Zurigo per tutte le marche.',
-      sections: [{ h2: 'Servizio Cargo Bike Zurigo', body: 'Specialisti in tutte le marche di cargo bike.' }],
-      faqs: [{ q: 'Quali marche ?', a: 'Tutte: Urban Arrow, Riese & Müller, Tern, etc.' }],
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurigo","url":"https://www.velov.ch/it/cargo" }]
-    },
+    seo: { id: 'cargo-it', h1: 'Servizio Cargo Bike Zurigo', intro: 'Servizio cargo bike mobile per tutte le marche.', sections: [{ h2: 'Servizio Zurigo', body: 'Specialisti in cargo bike.' }], faqs: [{ q: 'Quali marche ?', a: 'Tutte meccanicamente.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurigo" }] },
     ui: {
       badge: 'Servizio Cargo Bike Mobile · tutta Zurigo',
       heroH1: 'Riparazione Cargo Bike <span class="v-grad">direttamente da te</span> a Zurigo',
-      heroSub: 'Smetti di trascinare bici da 40kg. La nostra officina mobile viene da te — tutte le marche, prezzi fissi.',
+      heroSub: 'Smetti di trascinare bici da 40kg. La nostra officina mobile viene da te — prezzi fissi.',
       ctaPhone: '📞 Prenota appuntamento', ctaCalc: 'Calcola prezzo →',
       trust: ['⭐ 4.8 / 5 Recensioni Google', '🚐 Officina Mobile', '🚲 Tutte le marche Cargo', '💰 Trasferta CHF 49'],
-      whyLabel: 'Perché mobile', whyH2: 'Il servizio cargo che viene da te', whySub: 'Le cargo bike sono pesanti e ingombranti. Portiamo tutti gli attrezzi da te.',
+      whyLabel: 'Perché mobile', whyH2: 'Il servizio cargo che viene da te', whySub: 'Le cargo bike sono pesanti. Portiamo tutto da te.',
       info1T: 'Direttamente da te', info1D: 'Niente fatica con 40kg+. Ripariamo alla tua porta.',
       info2T: 'Specialisti Cargo', info2D: 'Esperti in 2 ruote, 3 ruote, Long-Tail e Front-Loader.',
-      info3T: 'Tutte le marche', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe — tutti i motori.',
+      info3T: 'Tutte le marche', info3D: 'Riese & Müller, Urban Arrow, Tern, Yuba, Babboe.',
       calcLabel: 'Calcolatore', calcH2: 'Quanto costa il tuo servizio ?', calcSub: 'Scegli pacchetto ed extra — prezzo in tempo reale.',
-      step1: '1. Scegli pacchetto base', step2: '2. Aggiungi extra (opzionali)',
+      step1: '1. Scegli pacchetto base', step2: '2. Aggiungi extra',
       totalLbl: 'Tuo Prezzo Fisso', totalFine: 'Trasferta Zurigo città CHF 49 · Parti in base all\'uso',
-      waBtn: 'Prenota via WhatsApp',
+      waBtn: 'Prenota WhatsApp',
       diagLabel: 'Interattivo', diagH2: 'Clicca sulla tua Cargo Bike', diagSub: 'Tocca un punto per i dettagli.',
       diagHint: '👆 Tocca un punto arancio',
       sliderLabel: 'Vale la pena ?', sliderH2: 'La tua Cargo Bike merita una riparazione ?', sliderSub: 'Sposta la barra in base allo stato attuale.',
       sliderL1: '🌟 Come nuova', sliderL2: '🔧 Uso normale', sliderL3: '⚠️ Molto usurata',
       faqLabel: 'FAQ', faqH2: 'FAQ Servizio Cargo', faqSub: 'Tutto quello che devi sapere.',
       finalH2: 'Servizio Cargo Bike a Zurigo — senza stress',
-      finalP: 'Veniamo da te e ripariamo sul posto. Prezzi fissi, Trasferta CHF 49.',
+      finalP: 'Veniamo da te e ripariamo sul posto. Trasferta CHF 49.',
       finalBtn: 'Prenota Servizio Cargo ora',
       finalCont: 'WhatsApp · info@velov.ch · Officina Mobile Cargo Zurigo',
       waMsg: 'Ciao VELOV! Vorrei prenotare un servizio cargo bike.'
@@ -258,7 +217,7 @@ const VELOV_LANG = {
 };
 
 /* ===================================================================
-   LANGUAGE DETECTION (Sourced from velov-home-UNIFIED.js)
+   LANGUAGE DETECTION (Sourced from Home UNIFIED)
    =================================================================== */
 function detectVelovLang() {
   try {
@@ -477,7 +436,7 @@ class VelovCargo extends HTMLElement {
         <input type="checkbox" value="${e.id}" ${this.state.extras.has(e.id) ? 'checked' : ''}>
         <span class="v-check"></span><span class="v-ext-icon">${e.icon}</span><span class="v-ext-label">${e.label}</span><span class="v-ext-price">+${e.price}</span>
       </label>`).join('');
-    return `<section class="v-section" id="v-calc" style="background:var(--v-white)"><div class="v-wrap"><div class="v-center"><div class="v-label">${this.UI.calcLabel}</div><h2 class="v-title">${this.UI.calcH2}</h2><p class="v-sub">${this.UI.calcSub}</p></div><div class="v-calc"><div class="v-calc-top"><div><h3>${this.UI.step1}</h3><div class="v-pkg-opts">${pkgOpts}</div></div><div><h3>${this.UI.step2}</h3><div class="v-extras-grid">${extOpts}</div></div></div><div class="v-calc-total"><div><div class="v-total-lbl">${this.UI.totalLbl}</div><div class="v-total-amt" id="v-total">CHF <span>${VelovCargo.CONFIG.packages[this.state.basePkg].price}</span></div><div class="v-total-fine">${this.UI.totalFine}</div></div><a class="v-wa-btn" id="v-wa-btn" href="#" rel="noopener">SVG_WA ${this.UI.waBtn}</a></div></div></div></section>`;
+    return `<section class="v-section" id="v-calc" style="background:var(--v-white)"><div class="v-wrap"><div class="v-center"><div class="v-label">${this.UI.calcLabel}</div><h2 class="v-title">${this.UI.calcH2}</h2><p class="v-sub">${this.UI.calcSub}</p></div><div class="v-calc"><div class="v-calc-top"><div><h3>${this.UI.step1}</h3><div class="v-pkg-opts">${pkgOpts}</div></div><div><h3>${this.UI.step2}</h3><div class="v-extras-grid">${extOpts}</div></div></div><div class="v-calc-total"><div><div class="v-total-lbl">${this.UI.totalLbl}</div><div class="v-total-amt" id="v-total">CHF <span>${VelovCargo.CONFIG.packages[this.state.basePkg].price}</span></div><div class="v-total-fine">${this.UI.totalFine}</div></div><a class="v-wa-btn" id="v-wa-btn" href="#" rel="noopener">💬 ${this.UI.waBtn}</a></div></div></div></section>`;
   }
 
   tplDiagram() {
