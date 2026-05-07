@@ -650,10 +650,49 @@ class VelovPannendienst extends HTMLElement {
   get UI(){ return this.L.ui; }
 
   connectedCallback(){
+    /* WIX HEIGHT FIX — forces element to be visible.
+       Wix Editor gives custom elements 0px height by default.
+       We set explicit dimensions so Wix has no choice but to show it. */
+    this.style.display   = 'block';
+    this.style.width     = '100%';
+    this.style.minHeight = '200px';
+    this.style.overflow  = 'visible';
+    this.style.position  = 'relative';
+
     try{ window.__velovSeoHelper&&window.__velovSeoHelper.injectSeo(this,this.L.seo,this.UI.faqLabel,this.UI.contactLabel); }catch(e){}
     try{ window.__velovTracker&&window.__velovTracker.bind(this,this._lang); }catch(e){}
     this.injectStyles();
     this.render();
+
+    /* Set exact height after render so Wix container expands */
+    this._fixHeight();
+
+    /* ResizeObserver keeps height updated as content changes */
+    if(typeof ResizeObserver !== 'undefined'){
+      try{
+        var self = this;
+        new ResizeObserver(function(){ self._fixHeight(); }).observe(this);
+      }catch(e){}
+    }
+
+    /* Fallback re-checks at 100ms / 500ms / 1500ms */
+    var me = this;
+    setTimeout(function(){ me._fixHeight(); }, 100);
+    setTimeout(function(){ me._fixHeight(); }, 500);
+    setTimeout(function(){ me._fixHeight(); }, 1500);
+  }
+
+  _fixHeight(){
+    try{
+      var h = this.scrollHeight || this.offsetHeight;
+      if(h > 100){
+        this.style.height    = h + 'px';
+        this.style.minHeight = h + 'px';
+      } else {
+        /* Content not painted yet — safe large fallback */
+        this.style.minHeight = '3000px';
+      }
+    }catch(e){}
   }
 
   injectStyles(){
