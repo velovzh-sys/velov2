@@ -697,12 +697,21 @@ class VelovPannendienst extends HTMLElement {
 
   injectStyles(){
     if(document.getElementById('velov-pannendienst-styles')) return;
+    /* Inject Google Fonts via <link> — @import is blocked by Wix CSP */
+    if(!document.getElementById('velov-pann-font')){
+      try{
+        var lnk=document.createElement('link');
+        lnk.id='velov-pann-font';
+        lnk.rel='stylesheet';
+        lnk.href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap';
+        document.head.appendChild(lnk);
+      }catch(e){}
+    }
     const s=document.createElement('style');
     s.id='velov-pannendienst-styles';
     s.textContent=`
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
     velov-pannendienst{--purple:#7B68EE;--purple-dark:#6354d4;--orange:#E8573A;--dark:#2D2B3D;--warm-bg:#F5F0EB;--white:#fff;--text:#2D2B3D;--muted:#6B6880;--border:#E8E4DF;--green:#4CAF50;
-      display:block;font-family:'DM Sans',system-ui,sans-serif;color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+      display:block !important;width:100% !important;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
     velov-pannendienst *{margin:0;padding:0;box-sizing:border-box}
     velov-pannendienst .vp-container{max-width:1100px;margin:0 auto;padding:0 24px}
     velov-pannendienst section{padding:96px 0}
