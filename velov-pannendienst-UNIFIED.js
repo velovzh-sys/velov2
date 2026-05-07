@@ -1,20 +1,4 @@
-/* ===================================================================
-   VELOV — UNIFIED Multilingual Pannendienst Custom Element
-   Languages: de (primary) · en · fr · it · es
-   Tag: <velov-pannendienst>
 
-   IMPROVEMENTS over original files:
-   ✅ All 5 languages fully translated (UI, steps, included, tiers, FAQs)
-   ✅ WhatsApp messages in correct language per visitor
-   ✅ Zone ETA box text in correct language
-   ✅ Richer FAQPage schema (8 Q&As per language vs 3 in original)
-   ✅ EmergencyService + LocalBusiness + AutoRepair schema per language
-   ✅ Breadcrumb schema with localised page names
-   ✅ hreflang-aware schema urls per language
-   ✅ Same language detection logic as velov-home-UNIFIED.js
-   =================================================================== */
-
-/* ===== VELOV Shared SEO Helper ===== */
 (function(){
   if (window.__velovSeoHelper) return;
   function safe(s){return String(s==null?'':s).replace(/[\u0000-\u001F]/g,' ');}
