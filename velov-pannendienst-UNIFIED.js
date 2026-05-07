@@ -1,4 +1,20 @@
+/* ===================================================================
+   VELOV — UNIFIED Multilingual Pannendienst Custom Element
+   Languages: de (primary) · en · fr · it · es
+   Tag: <velov-pannendienst>
 
+   IMPROVEMENTS over original files:
+   ✅ All 5 languages fully translated (UI, steps, included, tiers, FAQs)
+   ✅ WhatsApp messages in correct language per visitor
+   ✅ Zone ETA box text in correct language
+   ✅ Richer FAQPage schema (8 Q&As per language vs 3 in original)
+   ✅ EmergencyService + LocalBusiness + AutoRepair schema per language
+   ✅ Breadcrumb schema with localised page names
+   ✅ hreflang-aware schema urls per language
+   ✅ Same language detection logic as velov-home-UNIFIED.js
+   =================================================================== */
+
+/* ===== VELOV Shared SEO Helper ===== */
 (function(){
   if (window.__velovSeoHelper) return;
   function safe(s){return String(s==null?'':s).replace(/[\u0000-\u001F]/g,' ');}
@@ -622,308 +638,366 @@ function detectVpLang(){
 /* ===================================================================
    CUSTOM ELEMENT
    =================================================================== */
+
+/* ===================================================================
+   VELOV PANNENDIENST — Custom Element
+   Mirrors exact same pattern as velov-home-UNIFIED.js (which works)
+   Key rules: 
+   - No @import in CSS
+   - All CSS targets .vp-wrap inner div, NOT the custom element tag
+   - All HTML nested inside <div class="vp-wrap">
+   - String concat for dynamic HTML (no nested backticks)
+=================================================================== */
 class VelovPannendienst extends HTMLElement {
-  constructor(){
+
+  constructor() {
     super();
-    this.state={zone:null,openFaq:null};
-    this._lang=detectVpLang();
-    if(!VP_LANG[this._lang]) this._lang='de';
+    this.state = { zone: null, openFaq: null };
+    this._lang = detectVpLang();
+    if (!VP_LANG[this._lang]) this._lang = 'de';
   }
 
-  get L(){ return VP_LANG[this._lang]; }
-  get UI(){ return this.L.ui; }
+  get L() { return VP_LANG[this._lang]; }
+  get UI() { return this.L.ui; }
 
-  connectedCallback(){
-    try{ window.__velovSeoHelper&&window.__velovSeoHelper.injectSeo(this,this.L.seo,this.UI.faqLabel,this.UI.contactLabel); }catch(e){}
-    try{ window.__velovTracker&&window.__velovTracker.bind(this,this._lang); }catch(e){}
+  connectedCallback() {
+    /* Force visibility — Wix collapses custom elements to 0px */
+    this.style.display   = 'block';
+    this.style.width     = '100%';
+    this.style.minHeight = '200px';
+
+    try { window.__velovSeoHelper && window.__velovSeoHelper.injectSeo(this, this.L.seo, this.UI.faqLabel, this.UI.contactLabel); } catch(e) {}
+    try { window.__velovTracker && window.__velovTracker.bind(this, this._lang); } catch(e) {}
+
     this.injectStyles();
     this.render();
+    this.bindEvents();
+
+    /* Height fix — same as home file */
+    this._fixHeight();
+    var me = this;
+    setTimeout(function() { me._fixHeight(); }, 100);
+    setTimeout(function() { me._fixHeight(); }, 600);
+    setTimeout(function() { me._fixHeight(); }, 1500);
+    if (typeof ResizeObserver !== 'undefined') {
+      try { new ResizeObserver(function() { me._fixHeight(); }).observe(me); } catch(e) {}
+    }
   }
 
-  injectStyles(){
-    if(document.getElementById('velov-pannendienst-styles')) return;
-    const s=document.createElement('style');
-    s.id='velov-pannendienst-styles';
-    s.textContent=`
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-    velov-pannendienst{--purple:#7B68EE;--purple-dark:#6354d4;--orange:#E8573A;--dark:#2D2B3D;--warm-bg:#F5F0EB;--white:#fff;--text:#2D2B3D;--muted:#6B6880;--border:#E8E4DF;--green:#4CAF50;
-      display:block;font-family:'DM Sans',system-ui,sans-serif;color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-    velov-pannendienst *{margin:0;padding:0;box-sizing:border-box}
-    velov-pannendienst .vp-container{max-width:1100px;margin:0 auto;padding:0 24px}
-    velov-pannendienst section{padding:96px 0}
-    velov-pannendienst .vp-label{font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
-    velov-pannendienst .vp-title{font-size:clamp(24px,3vw,36px);font-weight:800;color:var(--dark);margin-bottom:14px;line-height:1.2}
-    velov-pannendienst .vp-sub{font-size:16px;color:var(--muted);max-width:620px;line-height:1.6}
-    /* HERO */
-    velov-pannendienst .vp-hero{background:linear-gradient(135deg,var(--dark),#1a1833);color:white;padding:96px 0 120px;text-align:center;position:relative;overflow:hidden}
-    velov-pannendienst .vp-hero::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:50px;background:var(--white);clip-path:ellipse(55% 100% at 50% 100%)}
-    velov-pannendienst .vp-hero::before{content:'';position:absolute;top:-80px;left:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(232,87,58,.25),transparent 70%);border-radius:50%}
-    velov-pannendienst .vp-hero-inner{position:relative;z-index:1}
-    velov-pannendienst .vp-live{display:inline-flex;align-items:center;gap:8px;background:rgba(76,175,80,.18);border:1px solid rgba(76,175,80,.45);color:#a7e9a9;font-size:13px;font-weight:700;padding:8px 18px;border-radius:50px;margin-bottom:20px;text-transform:uppercase;letter-spacing:.5px}
-    velov-pannendienst .vp-live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:vpulse 1.8s infinite}
-    @keyframes vpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-    velov-pannendienst .vp-hero h1{font-size:clamp(32px,5vw,52px);font-weight:800;line-height:1.1;margin-bottom:10px}
-    velov-pannendienst .vp-hero .vp-subt{font-size:20px;opacity:.85;margin-bottom:16px}
-    velov-pannendienst .vp-price-hero{display:inline-block;background:var(--orange);color:white;font-size:48px;font-weight:800;padding:18px 42px;border-radius:20px;margin:20px 0;line-height:1}
-    velov-pannendienst .vp-price-hero small{font-size:16px;font-weight:500;display:block;margin-top:4px;opacity:.95}
-    velov-pannendienst .vp-hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:16px}
-    velov-pannendienst .vp-hero-cta{display:inline-block;background:var(--purple);color:white;text-decoration:none;font-size:18px;font-weight:700;padding:18px 40px;border-radius:50px;transition:all .2s}
-    velov-pannendienst .vp-hero-cta:hover{background:var(--purple-dark);transform:translateY(-2px)}
-    velov-pannendienst .vp-hero-cta.wa{background:#25D366}
-    velov-pannendienst .vp-hero-cta.wa:hover{background:#1fb855}
-    velov-pannendienst .vp-hero-note{font-size:13px;opacity:.7;margin-top:18px}
-    /* BOOKER */
-    velov-pannendienst .vp-booker{background:var(--white)}
-    velov-pannendienst .vp-booker-card{max-width:860px;margin:44px auto 0;background:var(--warm-bg);border-radius:28px;padding:48px;box-shadow:0 16px 40px rgba(45,43,61,.06);border:1px solid var(--border)}
-    velov-pannendienst .vp-bk-step{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
-    velov-pannendienst .vp-bk-q{font-size:22px;font-weight:700;color:var(--dark);margin-bottom:24px}
-    velov-pannendienst .vp-zones{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:8px}
-    velov-pannendienst .vp-zone{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;font-family:inherit;text-align:left}
-    velov-pannendienst .vp-zone:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:0 8px 20px rgba(123,104,238,.12)}
-    velov-pannendienst .vp-zone.sel{border-color:var(--purple);background:var(--purple);color:white}
-    velov-pannendienst .vp-zone-name{font-weight:800;font-size:15px;margin-bottom:4px}
-    velov-pannendienst .vp-zone-eta{font-size:12px;opacity:.75}
-    velov-pannendienst .vp-zone-areas{font-size:11px;opacity:.65;margin-top:6px;line-height:1.3}
-    velov-pannendienst .vp-eta{margin-top:28px;padding:26px;background:var(--white);border-radius:16px;border-left:6px solid var(--green);animation:vfadeIn .4s ease}
-    @keyframes vfadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    velov-pannendienst .vp-eta h4{font-size:17px;font-weight:800;color:var(--dark);margin-bottom:4px}
-    velov-pannendienst .vp-eta-big{font-size:36px;font-weight:800;color:var(--purple);line-height:1;margin:8px 0}
-    velov-pannendienst .vp-eta-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
-    velov-pannendienst .vp-eta-cta{background:var(--green);color:white;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;transition:all .2s;white-space:nowrap;font-size:15px}
-    velov-pannendienst .vp-eta-cta:hover{background:#3d8b40;transform:translateY(-2px)}
-    velov-pannendienst .vp-eta-note{font-size:13px;color:var(--muted);margin-top:10px}
-    /* INCLUDED */
-    velov-pannendienst .vp-inc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:48px}
-    velov-pannendienst .vp-inc{background:var(--warm-bg);border-radius:16px;padding:32px 24px;text-align:center;transition:transform .2s}
-    velov-pannendienst .vp-inc:hover{transform:translateY(-3px)}
-    velov-pannendienst .vp-inc-icon{font-size:36px;margin-bottom:12px}
-    velov-pannendienst .vp-inc h3{font-size:16px;font-weight:700;margin-bottom:6px;color:var(--dark)}
-    velov-pannendienst .vp-inc p{font-size:14px;color:var(--muted)}
-    /* TIERS */
-    velov-pannendienst .vp-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-top:48px}
-    velov-pannendienst .vp-tier{background:var(--white);border:2px solid var(--border);border-radius:20px;padding:32px 26px;transition:all .2s}
-    velov-pannendienst .vp-tier:hover{border-color:var(--purple);transform:translateY(-4px);box-shadow:0 12px 32px rgba(123,104,238,.1)}
-    velov-pannendienst .vp-tier-badge{display:inline-block;background:var(--purple);color:white;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:8px;margin-bottom:14px}
-    velov-pannendienst .vp-tier h3{font-size:18px;font-weight:800;color:var(--dark);margin-bottom:6px;line-height:1.3}
-    velov-pannendienst .vp-tier-desc{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
-    velov-pannendienst .vp-tier-price{font-size:36px;font-weight:800;color:var(--orange);line-height:1;margin-bottom:18px}
-    velov-pannendienst .vp-tier-price small{font-size:14px;font-weight:600;color:var(--muted);margin-left:4px}
-    velov-pannendienst .vp-tier ul{list-style:none;padding:0;margin:0}
-    velov-pannendienst .vp-tier li{font-size:14px;color:var(--text);padding:6px 0 6px 22px;position:relative;line-height:1.45}
-    velov-pannendienst .vp-tier li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:800}
-    /* STEPS */
-    velov-pannendienst .vp-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:36px;margin-top:52px}
-    velov-pannendienst .vp-step{text-align:center}
-    velov-pannendienst .vp-step-num{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--purple);color:white;font-size:20px;font-weight:800;border-radius:50%;margin-bottom:16px}
-    velov-pannendienst .vp-step h3{font-size:17px;font-weight:700;margin-bottom:6px;color:var(--dark)}
-    velov-pannendienst .vp-step p{font-size:14px;color:var(--muted)}
-    /* FAQ */
-    velov-pannendienst .vp-faq{max-width:760px;margin:52px auto 0}
-    velov-pannendienst .vp-faq-item{border-bottom:1px solid var(--border);padding:20px 0}
-    velov-pannendienst .vp-faq-q{font-weight:700;cursor:pointer;font-size:16px;display:flex;justify-content:space-between;align-items:center;color:var(--dark);background:none;border:none;width:100%;text-align:left;font-family:inherit;padding:0}
-    velov-pannendienst .vp-faq-q::after{content:'+';font-size:20px;color:var(--purple);transition:transform .2s}
-    velov-pannendienst .vp-faq-item.open .vp-faq-q::after{content:'−'}
-    velov-pannendienst .vp-faq-a{font-size:14px;color:var(--muted);line-height:1.6;padding-top:12px;display:none}
-    velov-pannendienst .vp-faq-item.open .vp-faq-a{display:block;animation:vfadeIn .3s ease}
-    /* CTA */
-    velov-pannendienst .vp-cta{background:var(--orange);color:white;text-align:center;padding:96px 0}
-    velov-pannendienst .vp-cta h2{font-size:clamp(24px,3.5vw,36px);font-weight:800;margin-bottom:14px}
-    velov-pannendienst .vp-cta p{font-size:17px;opacity:.95;margin-bottom:30px;max-width:520px;margin-left:auto;margin-right:auto}
-    velov-pannendienst .vp-btn-dark{display:inline-block;background:var(--dark);color:white;text-decoration:none;font-weight:700;padding:16px 40px;border-radius:50px;font-size:17px;transition:all .2s;margin:6px}
-    velov-pannendienst .vp-btn-dark:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.3)}
-    velov-pannendienst .vp-btn-wa{display:inline-block;background:#25D366;color:white;text-decoration:none;font-weight:700;padding:16px 40px;border-radius:50px;font-size:17px;transition:all .2s;margin:6px}
-    velov-pannendienst .vp-btn-wa:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,211,102,.4)}
-    velov-pannendienst .vp-cta-contact{margin-top:26px;font-size:14px;opacity:.8}
-    velov-pannendienst .vp-cta-contact a{color:white;text-decoration:underline}
-    @media(max-width:768px){
-      velov-pannendienst section{padding:64px 0}
-      velov-pannendienst .vp-hero{padding:64px 0 90px}
-      velov-pannendienst .vp-price-hero{font-size:36px;padding:12px 28px}
-      velov-pannendienst .vp-zones{grid-template-columns:1fr 1fr}
-      velov-pannendienst .vp-booker-card{padding:28px 20px}
-      velov-pannendienst .vp-eta-row{flex-direction:column;align-items:flex-start}
-      velov-pannendienst .vp-eta-cta{width:100%;text-align:center}
-      velov-pannendienst .vp-inc-grid{grid-template-columns:1fr 1fr}
-      velov-pannendienst .vp-tiers{grid-template-columns:1fr}
-    }`;
+  _fixHeight() {
+    try {
+      var h = this.scrollHeight || this.offsetHeight;
+      if (h > 100) {
+        this.style.height    = h + 'px';
+        this.style.minHeight = h + 'px';
+      } else {
+        this.style.minHeight = '4000px';
+      }
+    } catch(e) {}
+  }
+
+  disconnectedCallback() {}
+
+  injectStyles() {
+    if (document.getElementById('velov-pann-styles')) return;
+    /* Google Fonts via <link> — @import blocked by Wix CSP */
+    if (!document.getElementById('velov-pann-font')) {
+      try {
+        var lnk = document.createElement('link');
+        lnk.id = 'velov-pann-font';
+        lnk.rel = 'stylesheet';
+        lnk.href = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap';
+        document.head.appendChild(lnk);
+      } catch(e) {}
+    }
+    var s = document.createElement('style');
+    s.id = 'velov-pann-styles';
+    /* ALL rules target .vp-wrap or children — NOT the custom element tag.
+       This mirrors how home file works and avoids Wix shadow DOM issues. */
+    s.textContent = `
+      .vp-wrap { display:block; width:100%; font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; color:#2D2B3D; box-sizing:border-box; line-height:1.6; -webkit-font-smoothing:antialiased; }
+      .vp-wrap *, .vp-wrap *::before, .vp-wrap *::after { box-sizing:border-box; margin:0; padding:0; }
+      .vp-wrap a { text-decoration:none; }
+
+      /* LAYOUT */
+      .vp-container { max-width:1100px; margin:0 auto; padding:0 24px; }
+      .vp-section   { padding:80px 0; }
+      .vp-section-warm { padding:80px 0; background:#F5F0EB; }
+      .vp-section-white { padding:80px 0; background:#fff; }
+
+      /* TYPOGRAPHY */
+      .vp-label { font-size:12px; font-weight:700; color:#7B68EE; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+      .vp-title { font-size:clamp(24px,3vw,36px); font-weight:800; color:#2D2B3D; margin-bottom:14px; line-height:1.2; }
+      .vp-sub   { font-size:16px; color:#6B6880; max-width:620px; line-height:1.6; margin:0 auto; }
+
+      /* HERO */
+      .vp-hero { background:linear-gradient(135deg,#2D2B3D,#1a1833); color:white; padding:96px 0 120px; text-align:center; position:relative; overflow:hidden; }
+      .vp-hero::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:50px; background:#fff; clip-path:ellipse(55% 100% at 50% 100%); }
+      .vp-hero-inner { position:relative; z-index:1; }
+      .vp-live { display:inline-flex; align-items:center; gap:8px; background:rgba(76,175,80,.18); border:1px solid rgba(76,175,80,.45); color:#a7e9a9; font-size:13px; font-weight:700; padding:8px 18px; border-radius:50px; margin-bottom:20px; text-transform:uppercase; letter-spacing:.5px; }
+      .vp-live-dot { width:8px; height:8px; background:#4CAF50; border-radius:50%; animation:vpulse 1.8s infinite; }
+      @keyframes vpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+      .vp-hero h1 { font-size:clamp(32px,5vw,52px); font-weight:800; line-height:1.1; margin-bottom:10px; color:#fff; }
+      .vp-hero .vp-subt { font-size:18px; opacity:.85; margin-bottom:16px; color:#fff; }
+      .vp-price-hero { display:inline-block; background:#E8573A; color:white; font-size:48px; font-weight:800; padding:18px 42px; border-radius:20px; margin:20px 0; line-height:1; }
+      .vp-price-hero small { font-size:15px; font-weight:500; display:block; margin-top:6px; opacity:.95; }
+      .vp-hero-ctas { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+      .vp-hero-cta { display:inline-block; background:#7B68EE; color:white; font-size:17px; font-weight:700; padding:16px 36px; border-radius:50px; transition:all .2s; }
+      .vp-hero-cta:hover { background:#6354d4; transform:translateY(-2px); }
+      .vp-hero-cta.wa { background:#25D366; }
+      .vp-hero-cta.wa:hover { background:#1fb855; }
+      .vp-hero-note { font-size:13px; opacity:.7; margin-top:18px; color:#fff; }
+
+      /* BOOKER */
+      .vp-booker-card { max-width:860px; margin:44px auto 0; background:#F5F0EB; border-radius:28px; padding:48px; box-shadow:0 16px 40px rgba(45,43,61,.06); border:1px solid #E8E4DF; }
+      .vp-bk-step { font-size:13px; color:#6B6880; font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:14px; }
+      .vp-bk-q { font-size:22px; font-weight:700; color:#2D2B3D; margin-bottom:24px; }
+      .vp-zones { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:8px; }
+      .vp-zone { background:#fff; border:2px solid #E8E4DF; border-radius:14px; padding:18px 14px; cursor:pointer; transition:all .2s; font-family:inherit; text-align:left; width:100%; }
+      .vp-zone:hover { border-color:#7B68EE; transform:translateY(-2px); }
+      .vp-zone.sel { border-color:#7B68EE; background:#7B68EE; color:white; }
+      .vp-zone-name { font-weight:800; font-size:15px; margin-bottom:4px; }
+      .vp-zone-eta  { font-size:12px; opacity:.75; }
+      .vp-zone-areas { font-size:11px; opacity:.65; margin-top:6px; line-height:1.3; }
+      .vp-eta { margin-top:28px; padding:26px; background:#fff; border-radius:16px; border-left:6px solid #4CAF50; }
+      .vp-eta h4 { font-size:17px; font-weight:800; color:#2D2B3D; margin-bottom:4px; }
+      .vp-eta-big { font-size:36px; font-weight:800; color:#7B68EE; line-height:1; margin:8px 0; }
+      .vp-eta-row { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; }
+      .vp-eta-cta { background:#4CAF50; color:white; text-decoration:none; padding:14px 28px; border-radius:50px; font-weight:700; font-size:15px; display:inline-block; }
+      .vp-eta-note { font-size:13px; color:#6B6880; margin-top:10px; }
+
+      /* INCLUDED */
+      .vp-inc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:24px; margin-top:48px; }
+      .vp-inc { background:#fff; border-radius:16px; padding:32px 24px; text-align:center; }
+      .vp-inc-icon { font-size:36px; margin-bottom:12px; }
+      .vp-inc h3 { font-size:16px; font-weight:700; margin-bottom:6px; color:#2D2B3D; }
+      .vp-inc p  { font-size:14px; color:#6B6880; }
+
+      /* TIERS */
+      .vp-tiers { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:22px; margin-top:48px; }
+      .vp-tier { background:#fff; border:2px solid #E8E4DF; border-radius:20px; padding:32px 26px; }
+      .vp-tier-badge { display:inline-block; background:#7B68EE; color:white; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; padding:4px 10px; border-radius:8px; margin-bottom:14px; }
+      .vp-tier h3 { font-size:18px; font-weight:800; color:#2D2B3D; margin-bottom:6px; line-height:1.3; }
+      .vp-tier-desc { font-size:13px; color:#6B6880; margin-bottom:16px; line-height:1.5; }
+      .vp-tier-price { font-size:36px; font-weight:800; color:#E8573A; line-height:1; margin-bottom:18px; }
+      .vp-tier-price small { font-size:14px; font-weight:600; color:#6B6880; margin-left:4px; }
+      .vp-tier ul { list-style:none; padding:0; margin:0; }
+      .vp-tier li { font-size:14px; color:#2D2B3D; padding:6px 0 6px 22px; position:relative; line-height:1.45; }
+      .vp-tier li::before { content:'✓'; position:absolute; left:0; color:#4CAF50; font-weight:800; }
+
+      /* STEPS */
+      .vp-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:36px; margin-top:52px; }
+      .vp-step { text-align:center; }
+      .vp-step-num { display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; background:#7B68EE; color:white; font-size:20px; font-weight:800; border-radius:50%; margin-bottom:16px; }
+      .vp-step h3 { font-size:17px; font-weight:700; margin-bottom:6px; color:#2D2B3D; }
+      .vp-step p  { font-size:14px; color:#6B6880; }
+
+      /* FAQ */
+      .vp-faq { max-width:760px; margin:52px auto 0; }
+      .vp-faq-item { border-bottom:1px solid #E8E4DF; padding:20px 0; }
+      .vp-faq-q { font-weight:700; cursor:pointer; font-size:16px; display:flex; justify-content:space-between; align-items:center; color:#2D2B3D; background:none; border:none; width:100%; text-align:left; font-family:inherit; padding:0; }
+      .vp-faq-q::after { content:'+'; font-size:20px; color:#7B68EE; }
+      .vp-faq-item.open .vp-faq-q::after { content:'−'; }
+      .vp-faq-a { font-size:14px; color:#6B6880; line-height:1.6; padding-top:12px; display:none; }
+      .vp-faq-item.open .vp-faq-a { display:block; }
+
+      /* FINAL CTA */
+      .vp-cta-section { background:#E8573A; color:white; text-align:center; padding:96px 0; }
+      .vp-cta-section h2 { font-size:clamp(24px,3.5vw,36px); font-weight:800; margin-bottom:14px; }
+      .vp-cta-section p { font-size:17px; opacity:.95; margin-bottom:30px; max-width:520px; margin-left:auto; margin-right:auto; }
+      .vp-btn-dark { display:inline-block; background:#2D2B3D; color:white; font-weight:700; padding:16px 40px; border-radius:50px; font-size:17px; margin:6px; }
+      .vp-btn-wa { display:inline-block; background:#25D366; color:white; font-weight:700; padding:16px 40px; border-radius:50px; font-size:17px; margin:6px; }
+      .vp-cta-contact { margin-top:26px; font-size:14px; opacity:.8; }
+      .vp-cta-contact a { color:white; text-decoration:underline; }
+
+      @media(max-width:768px){
+        .vp-booker-card { padding:28px 20px; }
+        .vp-zones { grid-template-columns:1fr 1fr; }
+        .vp-eta-row { flex-direction:column; }
+        .vp-tiers { grid-template-columns:1fr; }
+        .vp-price-hero { font-size:36px; padding:12px 28px; }
+      }
+    `;
     document.head.appendChild(s);
   }
 
-  render(){
-    const L=this.L, UI=this.UI, C=VP_CONTACT;
-    this.innerHTML=`
-      <section class="vp-hero">
-        <div class="vp-container vp-hero-inner">
-          <div class="vp-live"><span class="vp-live-dot"></span><span>${UI.liveBadge}</span></div>
-          <div style="font-size:56px;margin-bottom:4px">🔧</div>
-          <h1>${UI.heroH1}</h1>
-          <p class="vp-subt">${UI.heroSub}</p>
-          <div class="vp-price-hero">CHF 99<small>${UI.priceTagline}</small></div>
-          <div class="vp-hero-ctas">
-            <a href="tel:${C.phone}" class="vp-hero-cta">${UI.ctaPhone}</a>
-            <a href="https://wa.me/${C.waNumber}?text=${encodeURIComponent(UI.waHeroMsg)}" class="vp-hero-cta wa" target="_blank" rel="noopener">${UI.ctaWa}</a>
-          </div>
-          <div class="vp-hero-note">${UI.heroNote}</div>
-        </div>
-      </section>
+  /* ── HTML builder helpers (no nested backticks) ── */
+  _buildZones(UI) {
+    return VP_ZONES.map(function(z) {
+      var areas = z.areas.slice(0,3).join(', ') + (z.areas.length > 3 ? '…' : '');
+      return '<button class="vp-zone" data-id="' + z.id + '">'
+        + '<div class="vp-zone-name">' + z.name + '</div>'
+        + '<div class="vp-zone-eta">~' + z.eta + ' ' + UI.etaUnit + '</div>'
+        + '<div class="vp-zone-areas">' + areas + '</div>'
+        + '</button>';
+    }).join('');
+  }
 
-      <section class="vp-booker">
-        <div class="vp-container">
-          <div style="text-align:center">
-            <div class="vp-label">${UI.bookerLabel}</div>
-            <div class="vp-title">${UI.bookerTitle}</div>
-            <p class="vp-sub" style="margin:0 auto">${UI.bookerSub}</p>
-          </div>
-          <div class="vp-booker-card">
-            <div class="vp-bk-step">${UI.bookerStep}</div>
-            <div class="vp-bk-q">${UI.bookerQ}</div>
-            <div class="vp-zones" id="vp-zones">
-              ${VP_ZONES.map(z=>`
-                <button class="vp-zone" data-id="${z.id}">
-                  <div class="vp-zone-name">${z.name}</div>
-                  <div class="vp-zone-eta">~${z.eta} ${UI.etaUnit}</div>
-                  <div class="vp-zone-areas">${z.areas.slice(0,3).join(', ')}${z.areas.length>3?'…':''}</div>
-                </button>`).join('')}
-            </div>
-            <div id="vp-eta-box"></div>
-          </div>
-        </div>
-      </section>
+  _buildIncluded(items) {
+    return items.map(function(i) {
+      return '<div class="vp-inc">'
+        + '<div class="vp-inc-icon">' + i.icon + '</div>'
+        + '<h3>' + i.title + '</h3>'
+        + '<p>' + i.desc + '</p>'
+        + '</div>';
+    }).join('');
+  }
 
-      <section style="background:var(--warm-bg)">
-        <div class="vp-container">
-          <div style="text-align:center">
-            <div class="vp-label">${UI.inclLabel}</div>
-            <div class="vp-title">${UI.inclTitle}</div>
-            <p class="vp-sub" style="margin:0 auto">${UI.inclSub}</p>
-          </div>
-          <div class="vp-inc-grid">
-            ${L.included.map(i=>`
-              <div class="vp-inc">
-                <div class="vp-inc-icon">${i.icon}</div>
-                <h3>${i.title}</h3>
-                <p>${i.desc}</p>
-              </div>`).join('')}
-          </div>
-        </div>
-      </section>
+  _buildTiers(items, UI) {
+    return items.map(function(t) {
+      var lis = t.list.map(function(li) { return '<li>' + li + '</li>'; }).join('');
+      return '<div class="vp-tier">'
+        + '<span class="vp-tier-badge">' + t.badge + '</span>'
+        + '<h3>' + t.title + '</h3>'
+        + '<p class="vp-tier-desc">' + t.desc + '</p>'
+        + '<div class="vp-tier-price">CHF ' + t.price + '<small>' + UI.tierFrom + '</small></div>'
+        + '<ul>' + lis + '</ul>'
+        + '</div>';
+    }).join('');
+  }
 
-      <section style="background:var(--white)">
-        <div class="vp-container">
-          <div style="text-align:center">
-            <div class="vp-label">${UI.tiersLabel}</div>
-            <div class="vp-title">${UI.tiersTitle}</div>
-            <p class="vp-sub" style="margin:0 auto">${UI.tiersSub}</p>
-          </div>
-          <div class="vp-tiers">
-            ${L.tiers.map(t=>`
-              <div class="vp-tier">
-                <span class="vp-tier-badge">${t.badge}</span>
-                <h3>${t.title}</h3>
-                <p class="vp-tier-desc">${t.desc}</p>
-                <div class="vp-tier-price">CHF ${t.price}<small>${UI.tierFrom}</small></div>
-                <ul>${t.list.map(li=>`<li>${li}</li>`).join('')}</ul>
-              </div>`).join('')}
-          </div>
-        </div>
-      </section>
+  _buildSteps(items) {
+    return items.map(function(s) {
+      return '<div class="vp-step">'
+        + '<div class="vp-step-num">' + s.n + '</div>'
+        + '<h3>' + s.t + '</h3>'
+        + '<p>' + s.d + '</p>'
+        + '</div>';
+    }).join('');
+  }
 
-      <section style="background:var(--warm-bg)">
-        <div class="vp-container">
-          <div style="text-align:center">
-            <div class="vp-label">${UI.stepsLabel}</div>
-            <div class="vp-title">${UI.stepsTitle}</div>
-          </div>
-          <div class="vp-steps">
-            ${L.steps.map(s=>`
-              <div class="vp-step">
-                <div class="vp-step-num">${s.n}</div>
-                <h3>${s.t}</h3>
-                <p>${s.d}</p>
-              </div>`).join('')}
-          </div>
-        </div>
-      </section>
+  _buildFaqs(items) {
+    return items.map(function(f, i) {
+      return '<div class="vp-faq-item" data-i="' + i + '">'
+        + '<button class="vp-faq-q" aria-expanded="false">' + f.q + '</button>'
+        + '<div class="vp-faq-a">' + f.a + '</div>'
+        + '</div>';
+    }).join('');
+  }
 
-      <section style="background:var(--white)">
-        <div class="vp-container">
-          <div style="text-align:center">
-            <div class="vp-label">${UI.faqLabel2}</div>
-            <div class="vp-title">${UI.faqTitle}</div>
-          </div>
-          <div class="vp-faq" id="vp-faq">
-            ${L.faqs.map((f,i)=>`
-              <div class="vp-faq-item" data-i="${i}">
-                <button class="vp-faq-q" aria-expanded="false" aria-controls="vp-a-${i}">${f.q}</button>
-                <div class="vp-faq-a" id="vp-a-${i}">${f.a}</div>
-              </div>`).join('')}
-          </div>
-        </div>
-      </section>
+  render() {
+    var L = this.L;
+    var UI = this.UI;
+    var C = VP_CONTACT;
 
-      <section class="vp-cta">
-        <div class="vp-container">
-          <h2>${UI.ctaTitle}</h2>
-          <p>${UI.ctaBody}</p>
-          <a href="tel:${C.phone}" class="vp-btn-dark">📞 ${C.phoneDisplay}</a>
-          <a href="https://wa.me/${C.waNumber}" class="vp-btn-wa" target="_blank" rel="noopener">💬 WhatsApp</a>
-          <div class="vp-cta-contact">
-            <a href="mailto:${C.email}">${C.email}</a> · ${UI.ctaFooter}
-          </div>
-        </div>
-      </section>
-    `;
-    this.querySelectorAll('.vp-zone').forEach(b=>{
-      b.addEventListener('click',()=>this.pickZone(b.dataset.id));
+    /* Single wrapper div — all CSS targets .vp-wrap children */
+    this.innerHTML = '<div class="vp-wrap">'
+
+      /* HERO */
+      + '<div class="vp-hero"><div class="vp-container vp-hero-inner">'
+      + '<div class="vp-live"><span class="vp-live-dot"></span><span>' + UI.liveBadge + '</span></div>'
+      + '<div style="font-size:52px;margin-bottom:8px">🔧</div>'
+      + '<h1>' + UI.heroH1 + '</h1>'
+      + '<p class="vp-subt">' + UI.heroSub + '</p>'
+      + '<div class="vp-price-hero">CHF 99<small>' + UI.priceTagline + '</small></div>'
+      + '<div class="vp-hero-ctas">'
+      + '<a href="tel:' + C.phone + '" class="vp-hero-cta">' + UI.ctaPhone + '</a>'
+      + '<a href="https://wa.me/' + C.waNumber + '?text=' + encodeURIComponent(UI.waHeroMsg) + '" class="vp-hero-cta wa" target="_blank" rel="noopener">' + UI.ctaWa + '</a>'
+      + '</div>'
+      + '<div class="vp-hero-note">' + UI.heroNote + '</div>'
+      + '</div></div>'
+
+      /* BOOKER */
+      + '<div class="vp-section-white"><div class="vp-container">'
+      + '<div style="text-align:center"><div class="vp-label">' + UI.bookerLabel + '</div>'
+      + '<div class="vp-title">' + UI.bookerTitle + '</div>'
+      + '<p class="vp-sub">' + UI.bookerSub + '</p></div>'
+      + '<div class="vp-booker-card">'
+      + '<div class="vp-bk-step">' + UI.bookerStep + '</div>'
+      + '<div class="vp-bk-q">' + UI.bookerQ + '</div>'
+      + '<div class="vp-zones" id="vp-zones">' + this._buildZones(UI) + '</div>'
+      + '<div id="vp-eta-box"></div>'
+      + '</div></div></div>'
+
+      /* INCLUDED */
+      + '<div class="vp-section-warm"><div class="vp-container">'
+      + '<div style="text-align:center"><div class="vp-label">' + UI.inclLabel + '</div>'
+      + '<div class="vp-title">' + UI.inclTitle + '</div>'
+      + '<p class="vp-sub">' + UI.inclSub + '</p></div>'
+      + '<div class="vp-inc-grid">' + this._buildIncluded(L.included) + '</div>'
+      + '</div></div>'
+
+      /* TIERS */
+      + '<div class="vp-section-white"><div class="vp-container">'
+      + '<div style="text-align:center"><div class="vp-label">' + UI.tiersLabel + '</div>'
+      + '<div class="vp-title">' + UI.tiersTitle + '</div>'
+      + '<p class="vp-sub">' + UI.tiersSub + '</p></div>'
+      + '<div class="vp-tiers">' + this._buildTiers(L.tiers, UI) + '</div>'
+      + '</div></div>'
+
+      /* STEPS */
+      + '<div class="vp-section-warm"><div class="vp-container">'
+      + '<div style="text-align:center"><div class="vp-label">' + UI.stepsLabel + '</div>'
+      + '<div class="vp-title">' + UI.stepsTitle + '</div></div>'
+      + '<div class="vp-steps">' + this._buildSteps(L.steps) + '</div>'
+      + '</div></div>'
+
+      /* FAQ */
+      + '<div class="vp-section-white"><div class="vp-container">'
+      + '<div style="text-align:center"><div class="vp-label">' + UI.faqLabel2 + '</div>'
+      + '<div class="vp-title">' + UI.faqTitle + '</div></div>'
+      + '<div class="vp-faq" id="vp-faq">' + this._buildFaqs(L.faqs) + '</div>'
+      + '</div></div>'
+
+      /* FINAL CTA */
+      + '<div class="vp-cta-section"><div class="vp-container">'
+      + '<h2>' + UI.ctaTitle + '</h2>'
+      + '<p>' + UI.ctaBody + '</p>'
+      + '<a href="tel:' + C.phone + '" class="vp-btn-dark">📞 ' + C.phoneDisplay + '</a>'
+      + '<a href="https://wa.me/' + C.waNumber + '" class="vp-btn-wa" target="_blank" rel="noopener">💬 WhatsApp</a>'
+      + '<div class="vp-cta-contact"><a href="mailto:' + C.email + '">' + C.email + '</a> · ' + UI.ctaFooter + '</div>'
+      + '</div></div>'
+
+      + '</div>'; /* end .vp-wrap */
+  }
+
+  bindEvents() {
+    var me = this;
+    this.querySelectorAll('.vp-zone').forEach(function(b) {
+      b.addEventListener('click', function() { me.pickZone(b.dataset.id); });
     });
-    this.bindFaq();
-  }
-
-  pickZone(id){
-    const UI=this.UI, C=VP_CONTACT;
-    this.state.zone=id;
-    this.querySelectorAll('.vp-zone').forEach(el=>el.classList.toggle('sel',el.dataset.id===id));
-    const z=VP_ZONES.find(x=>x.id===id);
-    const box=this.querySelector('#vp-eta-box');
-    const waMsg=UI.waZoneMsg(z.name,z.areas);
-    box.innerHTML=`
-      <div class="vp-eta">
-        <div class="vp-eta-row">
-          <div>
-            <h4>${z.name}</h4>
-            <div class="vp-eta-big">~${z.eta} min</div>
-            <div style="font-size:14px;color:var(--muted);font-weight:600">${UI.etaArrival}</div>
-          </div>
-          <a class="vp-eta-cta" href="https://wa.me/${C.waNumber}?text=${encodeURIComponent(waMsg)}" target="_blank" rel="noopener">
-            ${UI.etaBookBtn}
-          </a>
-        </div>
-        <div class="vp-eta-note">${UI.etaPriceNote}</div>
-      </div>`;
-  }
-
-  bindFaq(){
-    this.querySelectorAll('.vp-faq-item').forEach(item=>{
-      const btn=item.querySelector('.vp-faq-q');
-      btn.addEventListener('click',()=>{
-        const i=+item.dataset.i;
-        const open=this.state.openFaq===i;
-        this.querySelectorAll('.vp-faq-item').forEach(el=>{
+    this.querySelectorAll('.vp-faq-item').forEach(function(item) {
+      item.querySelector('.vp-faq-q').addEventListener('click', function() {
+        var i = parseInt(item.dataset.i, 10);
+        var isOpen = me.state.openFaq === i;
+        me.querySelectorAll('.vp-faq-item').forEach(function(el) {
           el.classList.remove('open');
-          el.querySelector('.vp-faq-q').setAttribute('aria-expanded','false');
+          el.querySelector('.vp-faq-q').setAttribute('aria-expanded', 'false');
         });
-        if(!open){
+        if (!isOpen) {
           item.classList.add('open');
-          btn.setAttribute('aria-expanded','true');
-          this.state.openFaq=i;
+          item.querySelector('.vp-faq-q').setAttribute('aria-expanded', 'true');
+          me.state.openFaq = i;
         } else {
-          this.state.openFaq=null;
+          me.state.openFaq = null;
         }
       });
     });
   }
+
+  pickZone(id) {
+    var me = this;
+    var UI = this.UI;
+    var C = VP_CONTACT;
+    this.state.zone = id;
+    this.querySelectorAll('.vp-zone').forEach(function(el) {
+      el.classList.toggle('sel', el.dataset.id === id);
+    });
+    var z = VP_ZONES.find(function(x) { return x.id === id; });
+    var waMsg = UI.waZoneMsg(z.name, z.areas);
+    this.querySelector('#vp-eta-box').innerHTML =
+      '<div class="vp-eta">'
+      + '<div class="vp-eta-row">'
+      + '<div><h4>' + z.name + '</h4>'
+      + '<div class="vp-eta-big">~' + z.eta + ' min</div>'
+      + '<div style="font-size:14px;color:#6B6880;font-weight:600">' + UI.etaArrival + '</div></div>'
+      + '<a class="vp-eta-cta" href="https://wa.me/' + C.waNumber + '?text=' + encodeURIComponent(waMsg) + '" target="_blank" rel="noopener">' + UI.etaBookBtn + '</a>'
+      + '</div>'
+      + '<div class="vp-eta-note">' + UI.etaPriceNote + '</div>'
+      + '</div>';
+  }
 }
 
-if(!customElements.get('velov-pannendienst')){
-  customElements.define('velov-pannendienst',VelovPannendienst);
+if (!customElements.get('velov-pannendienst')) {
+  customElements.define('velov-pannendienst', VelovPannendienst);
 }
