@@ -100,7 +100,7 @@
 /* ===================================================================
    SHARED CONSTANTS
 =================================================================== */
-var VS_CONTACT = {
+const VS_CONTACT = {
   phone: '+41762352126',
   phoneDisplay: '+41 76 235 21 26',
   waNumber: '41762352126',
@@ -122,7 +122,7 @@ function detectVsLang(){
 /* ===================================================================
    MULTILINGUAL CONTENT — All 5 languages
 =================================================================== */
-var VS_LANG = {
+const VS_LANG = {
 
   /* ── DEUTSCH ── */
   de: {
@@ -646,7 +646,7 @@ class VelovServices extends HTMLElement {
     s.id = 'velov-services-styles';
     /* ALL rules target .vs-wrap or children — NEVER velov-services tag */
     s.textContent = `
-      .vs-wrap{display:block;width:100%;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;color:#2D2B3D;line-height:1.6;-webkit-font-smoothing:antialiased}
+      .vs-wrap { display:block; width:100%; min-height:200px; background:#F5F0EB; font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; color:#2D2B3D; line-height:1.6; -webkit-font-smoothing:antialiased; }
       .vs-wrap *,.vs-wrap *::before,.vs-wrap *::after{margin:0;padding:0;box-sizing:border-box}
       .vs-wrap a{text-decoration:none}
 
