@@ -1,26 +1,8 @@
-/* ===================================================================
-   VELOV — UNIFIED Multilingual Locations Custom Element
-   Languages: de (primary) · en · fr · it · es
-   Tag: <velov-locations>
-
-   PROVEN WORKING PATTERN:
-   ✅ CSS targets .vl-wrap — NOT velov-locations tag
-   ✅ No @import — Google Fonts via <link>
-   ✅ No nested backticks — string concatenation only
-   ✅ .vl-wrap has background:#F5F0EB + min-height:200px in CSS
-   ✅ display:block + background + overflow:visible on connectedCallback
-   ✅ const at top level
-   ✅ _fixHeight() + ResizeObserver + 3 timers
-   ✅ All 5 languages: zones, stories, services, FAQs, WhatsApp messages
-   ✅ Zürich personality: real neighbourhood stories, local humour,
-      landmarks, Züri-Deutsch flavour in DE, localised fun in EN/FR/IT/ES
-=================================================================== */
-
-/* ===== Shared SEO Helper ===== */
+/* ===== VELOV Shared SEO Helper ===== */
 (function(){
-  if(window.__velovSeoHelper) return;
-  function safe(s){ return String(s==null?'':s).replace(/[\u0000-\u001F]/g,' '); }
-  function buildMirror(s, faqLabel, contactLabel){
+  if (window.__velovSeoHelper) return;
+  function safe(s){return String(s==null?'':s).replace(/[\u0000-\u001F]/g,' ');}
+  function buildMirror(s){
     var h='<article itemscope itemtype="https://schema.org/Article">';
     h+='<header><h1>'+safe(s.h1)+'</h1>';
     if(s.intro) h+='<p>'+safe(s.intro)+'</p>';
@@ -36,15 +18,15 @@
       h+='</section>';
     });
     if(Array.isArray(s.faqs)&&s.faqs.length){
-      h+='<section><h2>'+(faqLabel||'FAQ')+'</h2>';
-      s.faqs.forEach(function(f){ h+='<h3>'+safe(f.q)+'</h3><p>'+safe(f.a)+'</p>'; });
+      h+='<section><h2>FAQ</h2>';
+      s.faqs.forEach(function(f){h+='<h3>'+safe(f.q)+'</h3><p>'+safe(f.a)+'</p>';});
       h+='</section>';
     }
-    if(s.contact) h+='<section><h2>'+(contactLabel||'Contact')+'</h2><p>'+safe(s.contact)+'</p></section>';
+    if(s.contact) h+='<section><h2>Kontakt</h2><p>'+safe(s.contact)+'</p></section>';
     h+='</article>';
     return h;
   }
-  function injectSeo(host, cfg, faqLabel, contactLabel){
+  function injectSeo(host,cfg){
     if(!host||!cfg) return;
     function appendMirror(){
       if(host.querySelector('[data-velov-seo]')) return;
@@ -52,1018 +34,914 @@
       m.setAttribute('data-velov-seo','');
       m.setAttribute('aria-hidden','true');
       m.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:normal;border:0';
-      m.innerHTML=buildMirror(cfg, faqLabel, contactLabel);
+      m.innerHTML=buildMirror(cfg);
       host.appendChild(m);
     }
     setTimeout(appendMirror, 0);
     setTimeout(appendMirror, 100);
-    if(typeof requestAnimationFrame==='function') requestAnimationFrame(function(){ requestAnimationFrame(appendMirror); });
+    if(typeof requestAnimationFrame==='function') requestAnimationFrame(function(){requestAnimationFrame(appendMirror);});
     if(Array.isArray(cfg.schema)&&cfg.schema.length){
       var id='velov-schema-'+(cfg.id||host.tagName.toLowerCase());
       var ex=document.getElementById(id); if(ex) ex.remove();
       var sc=document.createElement('script');
       sc.id=id; sc.type='application/ld+json';
-      try{ sc.textContent=JSON.stringify(cfg.schema); }catch(e){ return; }
+      try{sc.textContent=JSON.stringify(cfg.schema);}catch(e){return;}
       document.head.appendChild(sc);
     }
   }
-  window.__velovSeoHelper={injectSeo:injectSeo};
+  window.__velovSeoHelper={injectSeo:injectSeo,buildMirror:buildMirror};
 })();
 
-/* ===== Shared Tracker ===== */
+/* ===== VELOV Tracker ===== */
 (function(){
-  if(window.__velovTracker) return;
+  if (window.__velovTracker) return;
   function pushEvent(name, params){
-    try{
-      window.dataLayer=window.dataLayer||[];
-      window.dataLayer.push(Object.assign({event:name}, params||{}));
-      if(typeof window.gtag==='function') window.gtag('event', name, params||{});
-    }catch(e){}
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({event: name}, params || {}));
+      if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+    } catch(e) {}
   }
-  function bind(host, lang){
-    if(!host||host.__velovBound) return;
-    host.__velovBound=true;
+  function pageContext(host){
+    return {
+      page_component: (host && host.tagName) ? host.tagName.toLowerCase() : 'unknown',
+      page_path: (typeof location !== 'undefined') ? location.pathname : ''
+    };
+  }
+  function bind(host){
+    if (!host || host.__velovBound) return;
+    host.__velovBound = true;
     host.addEventListener('click', function(e){
-      var a=e.target.closest&&e.target.closest('a');
-      if(!a) return;
-      var href=a.getAttribute('href')||'';
-      var label=(a.textContent||'').replace(/\s+/g,' ').trim().slice(0,60);
-      var ctx={page_component:host.tagName.toLowerCase(),page_path:(typeof location!=='undefined'?location.pathname:''),language:lang||'de'};
-      if(/^https?:\/\/(?:wa\.me|api\.whatsapp\.com)/i.test(href)) pushEvent('whatsapp_click',Object.assign({link_url:href,link_text:label},ctx));
-      else if(/^tel:/i.test(href)) pushEvent('phone_click',Object.assign({link_url:href,link_text:label},ctx));
-    },{passive:true,capture:true});
+      var a = e.target.closest && e.target.closest('a');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      var ctx = pageContext(host);
+      var label = (a.textContent || '').replace(/\s+/g,' ').trim().slice(0,60);
+      if (/^https?:\/\/(?:wa\.me|api\.whatsapp\.com)/i.test(href) || /whatsapp/i.test(href)) {
+        pushEvent('whatsapp_click', Object.assign({link_url: href, link_text: label, component: 'locations'}, ctx));
+      } else if (/^tel:/i.test(href)) {
+        pushEvent('phone_click', Object.assign({link_url: href, link_text: label, component: 'locations'}, ctx));
+      } else if (/^mailto:/i.test(href)) {
+        pushEvent('email_click', Object.assign({link_url: href, link_text: label, component: 'locations'}, ctx));
+      } else if (/booking|termin|offerte/i.test(href + ' ' + label)) {
+        pushEvent('booking_click', Object.assign({link_url: href, link_text: label, component: 'locations'}, ctx));
+      }
+    }, {passive: true, capture: true});
   }
-  window.__velovTracker={bind:bind,pushEvent:pushEvent};
+  window.__velovTracker = {bind: bind, pushEvent: pushEvent};
 })();
 
-/* ===================================================================
-   SHARED CONSTANTS
-=================================================================== */
-const VL_CONTACT = {
-  phone: '+41762352126',
-  phoneDisplay: '+41 76 235 21 26',
-  waNumber: '41762352126',
-  email: 'info@velov.ch'
-};
+/* =============================================================
+ * VELOV — Locations Hub (Multilingual v2.2 · Züri-Edition)
+ * Languages: DE / EN / FR / IT / ES (auto-detected from <html lang>)
+ *
+ * Features:
+ *   - 30+ Quartiere & Gemeinden, jedes mit eigenem Witz pro Sprache
+ *   - Rotating "Did you know" Züri facts (Sechseläuten, Föhn, Üetliberg etc.)
+ *   - Search + filter (Stadt / Umland / All)
+ *   - Live ETA + WhatsApp deep-link
+ *
+ * Wix install:
+ *   Editor → Add (+) → Embed → Custom Element
+ *   Tag: velov-locations
+ * ============================================================= */
 
-/* Zones — names are Zürich local names, stay consistent across languages.
-   Each zone has a story: a real Zürich landmark / moment for the fun factor */
-const VL_ZONES = [
-  /* CITY */
-  { slug:'enge',             name:'Enge',             type:'city',   eta:35, landmark:'Bürkliplatz', storyKey:'enge' },
-  { slug:'wollishofen',      name:'Wollishofen',      type:'city',   eta:40, landmark:'Zürichsee',  storyKey:'wollishofen' },
-  { slug:'leimbach',         name:'Leimbach',         type:'city',   eta:45, landmark:'Allmend',    storyKey:'leimbach' },
-  { slug:'wiedikon',         name:'Wiedikon',         type:'city',   eta:35, landmark:'Schmiede Wiedikon', storyKey:'wiedikon' },
-  { slug:'aussersihl',       name:'Aussersihl',       type:'city',   eta:30, landmark:'Langstrasse', storyKey:'aussersihl' },
-  { slug:'industriequartier',name:'Industriequartier',type:'city',   eta:30, landmark:'Prime Tower', storyKey:'industriequartier' },
-  { slug:'schwamendingen',   name:'Schwamendingen',   type:'city',   eta:50, landmark:'Schwamendingerplatz', storyKey:'schwamendingen' },
-  { slug:'oerlikon',         name:'Oerlikon',         type:'city',   eta:40, landmark:'MFO-Park',   storyKey:'oerlikon' },
-  { slug:'hoengg',           name:'Höngg',            type:'city',   eta:45, landmark:'Wipkingerpark', storyKey:'hoengg' },
-  { slug:'affoltern',        name:'Affoltern',        type:'city',   eta:50, landmark:'Affoltern Dorfkern', storyKey:'affoltern' },
-  { slug:'seefeld',          name:'Seefeld',          type:'city',   eta:35, landmark:'Opernhaus',  storyKey:'seefeld' },
-  { slug:'witikon',          name:'Witikon',          type:'city',   eta:55, landmark:'Zürichberg', storyKey:'witikon' },
-  { slug:'hirslanden',       name:'Hirslanden',       type:'city',   eta:40, landmark:'Klinik Hirslanden', storyKey:'hirslanden' },
-  /* UMLAND */
-  { slug:'schlieren',        name:'Schlieren',        type:'umland', eta:55, landmark:'Zentrum Schlieren', storyKey:'schlieren' },
-  { slug:'kilchberg',        name:'Kilchberg',        type:'umland', eta:60, landmark:'Lindt Schokolade',  storyKey:'kilchberg' },
-  { slug:'ruemlang',         name:'Rümlang',          type:'umland', eta:65, landmark:'Flughafen',  storyKey:'ruemlang' },
-  { slug:'opfikon',          name:'Opfikon',          type:'umland', eta:60, landmark:'Glattpark',  storyKey:'opfikon' },
-  { slug:'glattbrugg',       name:'Glattbrugg',       type:'umland', eta:65, landmark:'Shoppi Tivoli', storyKey:'glattbrugg' },
-  { slug:'wallisellen',      name:'Wallisellen',      type:'umland', eta:65, landmark:'Dietlikon',  storyKey:'wallisellen' },
-  { slug:'zollikon',         name:'Zollikon',         type:'umland', eta:55, landmark:'Zürichsee Ufer', storyKey:'zollikon' },
-  { slug:'horgen',           name:'Horgen',           type:'umland', eta:75, landmark:'Dampfschiff', storyKey:'horgen' },
-  { slug:'thalwil',          name:'Thalwil',          type:'umland', eta:70, landmark:'Thalwil Badi', storyKey:'thalwil' }
+const VELOV_LOC_ZONES = [
+  /* ─── STADT ZÜRICH ─── */
+  { slug:'altstadt', type:'city', eta:35,
+    names:{DE:'Altstadt (Kreis 1)',EN:'Old Town (Kreis 1)',FR:'Vieille Ville (Kreis 1)',IT:'Città Vecchia (Kreis 1)',ES:'Casco Antiguo (Kreis 1)'},
+    jokes:{
+      DE:'Plattfuss am Niederdorf-Kopfsteinpflaster? Klassiker. Wir sind schneller da als der nächste 11er.',
+      EN:'Flat tyre on Niederdorf cobblestones? Classic. We arrive faster than the next tram 11.',
+      FR:'Crevaison sur les pavés du Niederdorf ? Classique. On arrive avant le prochain tram 11.',
+      IT:'Foratura sui sanpietrini del Niederdorf? Classico. Arriviamo prima del prossimo tram 11.',
+      ES:'¿Pinchazo en los adoquines del Niederdorf? Clásico. Llegamos antes que el próximo tranvía 11.'} },
+  { slug:'enge', type:'city', eta:45,
+    names:{DE:'Enge (Kreis 2)',EN:'Enge (Kreis 2)',FR:'Enge (Kreis 2)',IT:'Enge (Kreis 2)',ES:'Enge (Kreis 2)'},
+    jokes:{
+      DE:'Auf dem Weg zum Strandbad Mythenquai wars noch flüssig. Jetzt nur dein Reifen. Same-day.',
+      EN:'On the way to the Mythenquai lido it was still fluid. Now only your tyre is. Same-day.',
+      FR:'Sur le chemin du Strandbad Mythenquai, l\'eau coulait. Maintenant seul votre pneu fuit.',
+      IT:'Andando al lido Mythenquai era ancora liquido. Ora solo la tua gomma.',
+      ES:'Camino del Strandbad Mythenquai aún corría el agua. Ahora solo tu rueda.'} },
+  { slug:'wollishofen', type:'city', eta:50,
+    names:{DE:'Wollishofen (Kreis 2)',EN:'Wollishofen (Kreis 2)',FR:'Wollishofen (Kreis 2)',IT:'Wollishofen (Kreis 2)',ES:'Wollishofen (Kreis 2)'},
+    jokes:{
+      DE:'Wo der Bahnhof Wollishofen anfängt und Adliswil noch nicht beginnt — wir kommen rüber.',
+      EN:'Where Wollishofen station ends and Adliswil hasn\'t quite started — we come over.',
+      FR:'Où la gare Wollishofen finit et Adliswil n\'a pas commencé — on y va.',
+      IT:'Dove finisce la stazione Wollishofen e Adliswil non è cominciata — arriviamo.',
+      ES:'Donde acaba la estación Wollishofen y Adliswil no empieza — vamos allá.'} },
+  { slug:'wiedikon', type:'city', eta:40,
+    names:{DE:'Wiedikon (Kreis 3)',EN:'Wiedikon (Kreis 3)',FR:'Wiedikon (Kreis 3)',IT:'Wiedikon (Kreis 3)',ES:'Wiedikon (Kreis 3)'},
+    jokes:{
+      DE:'Vom Idaplatz bis Goldbrunnen — unser Stamm-Quartier. Kalkbreite-Bewohner kennen uns beim Vornamen.',
+      EN:'From Idaplatz to Goldbrunnen — our home turf. Kalkbreite residents know us by first name.',
+      FR:'De l\'Idaplatz au Goldbrunnen — notre QG. Les habitants de Kalkbreite nous appellent par prénom.',
+      IT:'Da Idaplatz a Goldbrunnen — la nostra zona. Alla Kalkbreite ci chiamano per nome.',
+      ES:'De Idaplatz a Goldbrunnen — nuestro territorio. En Kalkbreite nos llaman por el nombre.'} },
+  { slug:'aussersihl', type:'city', eta:35,
+    names:{DE:'Aussersihl (Kreis 4)',EN:'Aussersihl (Kreis 4)',FR:'Aussersihl (Kreis 4)',IT:'Aussersihl (Kreis 4)',ES:'Aussersihl (Kreis 4)'},
+    jokes:{
+      DE:'Langstrasse-Klassiker: Notfall um 22:00, weil du noch Apéro hast. Wir kommen.',
+      EN:'Langstrasse classic: emergency at 10 pm because aperitivo is still on. We come.',
+      FR:'Classique Langstrasse : urgence à 22h parce que l\'apéro continue. On arrive.',
+      IT:'Classico Langstrasse: emergenza alle 22 perché l\'aperitivo continua.',
+      ES:'Clásico de la Langstrasse: urgencia a las 22:00 porque el apéro sigue. Vamos.'} },
+  { slug:'industriequartier', type:'city', eta:35,
+    names:{DE:'Industriequartier (Kreis 5)',EN:'Industrial District (Kreis 5)',FR:'Quartier industriel (Kreis 5)',IT:'Quartiere industriale (Kreis 5)',ES:'Distrito industrial (Kreis 5)'},
+    jokes:{
+      DE:'Prime Tower, Hardbrücke, Frau Gerolds Garten. Pendler-Velo gibt den Geist auf? Velov übernimmt.',
+      EN:'Prime Tower, Hardbrücke, Frau Gerolds Garten. Commuter bike giving up? Velov handles it.',
+      FR:'Prime Tower, Hardbrücke, Frau Gerolds Garten. Vélo qui rend l\'âme ? Velov gère.',
+      IT:'Prime Tower, Hardbrücke, Frau Gerolds Garten. Bici da pendolare in agonia? Ci pensa Velov.',
+      ES:'Prime Tower, Hardbrücke, Frau Gerolds Garten. ¿Bici de pendular agotada? Velov se encarga.'} },
+  { slug:'unterstrass', type:'city', eta:45,
+    names:{DE:'Unterstrass (Kreis 6)',EN:'Unterstrass (Kreis 6)',FR:'Unterstrass (Kreis 6)',IT:'Unterstrass (Kreis 6)',ES:'Unterstrass (Kreis 6)'},
+    jokes:{
+      DE:'ETH-Studierende mit kaputter Schaltung — vor der Prüfung gar keine Zeit. 30 Min und du bist startklar.',
+      EN:'ETH student with broken gears — no time before exams. 30 min and you\'re ready.',
+      FR:'Étudiant EPF avec vitesses cassées — pas de temps avant l\'examen. 30 min et c\'est réglé.',
+      IT:'Studente ETH con cambio rotto — niente tempo prima dell\'esame. 30 min e via.',
+      ES:'Estudiante de la ETH con cambios rotos — sin tiempo antes del examen. 30 min y listo.'} },
+  { slug:'oberstrass', type:'city', eta:45,
+    names:{DE:'Oberstrass (Kreis 6)',EN:'Oberstrass (Kreis 6)',FR:'Oberstrass (Kreis 6)',IT:'Oberstrass (Kreis 6)',ES:'Oberstrass (Kreis 6)'},
+    jokes:{
+      DE:'Universität Irchel rauf, Kette runter. Wir richten sie wieder, im Sitzen.',
+      EN:'Up to Irchel, chain dropped. We put it back. While seated.',
+      FR:'Montée à Irchel, chaîne tombée. On la remet. Assis.',
+      IT:'Salita all\'Irchel, catena giù. La rimettiamo, da seduti.',
+      ES:'Subida al Irchel, cadena caída. La ponemos otra vez. Sentados.'} },
+  { slug:'hottingen', type:'city', eta:50,
+    names:{DE:'Hottingen (Kreis 7)',EN:'Hottingen (Kreis 7)',FR:'Hottingen (Kreis 7)',IT:'Hottingen (Kreis 7)',ES:'Hottingen (Kreis 7)'},
+    jokes:{
+      DE:'Kreuzplatz-Bezirk, viele E-Bikes. Mechanisch alles bei uns — Akku-Diagnose beim Markenhändler.',
+      EN:'Kreuzplatz area, lots of e-bikes. All mechanics with us — battery diagnostics at the dealer.',
+      FR:'Zone Kreuzplatz, beaucoup de e-bikes. Toute la mécanique chez nous — batterie chez le concessionnaire.',
+      IT:'Zona Kreuzplatz, molte e-bike. Tutta la meccanica con noi — diagnosi batteria dal concessionario.',
+      ES:'Zona Kreuzplatz, muchas e-bikes. Toda la mecánica con nosotros — diagnóstico de batería en el concesionario.'} },
+  { slug:'hirslanden', type:'city', eta:50,
+    names:{DE:'Hirslanden (Kreis 7)',EN:'Hirslanden (Kreis 7)',FR:'Hirslanden (Kreis 7)',IT:'Hirslanden (Kreis 7)',ES:'Hirslanden (Kreis 7)'},
+    jokes:{
+      DE:'Klinik-Quartier. Wir flicken Velos, nicht Knochen — aber genauso schnell.',
+      EN:'Hospital district. We fix bikes, not bones — but just as quickly.',
+      FR:'Quartier de la clinique. On répare les vélos, pas les os — aussi vite.',
+      IT:'Zona della clinica. Ripariamo bici, non ossa — altrettanto veloci.',
+      ES:'Zona de la clínica. Arreglamos bicis, no huesos — igual de rápido.'} },
+  { slug:'witikon', type:'city', eta:60,
+    names:{DE:'Witikon (Kreis 7)',EN:'Witikon (Kreis 7)',FR:'Witikon (Kreis 7)',IT:'Witikon (Kreis 7)',ES:'Witikon (Kreis 7)'},
+    jokes:{
+      DE:'Oben am Hügel. E-Bike Akku leer auf der Forch? Wir sammeln dich ein.',
+      EN:'Up on the hill. E-bike battery dead near Forch? We pick you up.',
+      FR:'En haut. Batterie morte vers Forch ? On vient.',
+      IT:'In alto. Batteria morta verso Forch? Veniamo.',
+      ES:'Arriba en la colina. ¿Batería muerta cerca de Forch? Vamos.'} },
+  { slug:'seefeld', type:'city', eta:40,
+    names:{DE:'Seefeld (Kreis 8)',EN:'Seefeld (Kreis 8)',FR:'Seefeld (Kreis 8)',IT:'Seefeld (Kreis 8)',ES:'Seefeld (Kreis 8)'},
+    jokes:{
+      DE:'Schwumm im See, Espresso am Bürkliplatz, Plattfuss am Bellevue. Wir machen Schritt drei rückgängig.',
+      EN:'Swim in the lake, espresso at Bürkliplatz, flat tyre at Bellevue. We undo step three.',
+      FR:'Baignade au lac, espresso au Bürkliplatz, crevaison au Bellevue. On annule l\'étape trois.',
+      IT:'Bagno nel lago, caffè al Bürkliplatz, foratura al Bellevue. Annulliamo il passo tre.',
+      ES:'Baño en el lago, café en Bürkliplatz, pinchazo en Bellevue. Deshacemos el paso tres.'} },
+  { slug:'riesbach', type:'city', eta:45,
+    names:{DE:'Riesbach (Kreis 8)',EN:'Riesbach (Kreis 8)',FR:'Riesbach (Kreis 8)',IT:'Riesbach (Kreis 8)',ES:'Riesbach (Kreis 8)'},
+    jokes:{
+      DE:'Tiefenbrunnen-Pendler, hochpreisige Velos, anspruchsvoll. Genau unser Ding.',
+      EN:'Tiefenbrunnen commuters, premium bikes, demanding. Exactly our turf.',
+      FR:'Pendulaires Tiefenbrunnen, vélos haut de gamme, exigeants. Notre terrain.',
+      IT:'Pendolari Tiefenbrunnen, bici di alta gamma, esigenti. Roba nostra.',
+      ES:'Pendulares de Tiefenbrunnen, bicis premium, exigentes. Nuestro terreno.'} },
+  { slug:'altstetten', type:'city', eta:50,
+    names:{DE:'Altstetten (Kreis 9)',EN:'Altstetten (Kreis 9)',FR:'Altstetten (Kreis 9)',IT:'Altstetten (Kreis 9)',ES:'Altstetten (Kreis 9)'},
+    jokes:{
+      DE:'Kreis 9 wächst schneller als FCZ-Tabellenplätze. Wir wachsen mit — auch im Letzigrund.',
+      EN:'Kreis 9 grows faster than FCZ table positions. We grow with it — even at Letzigrund.',
+      FR:'Kreis 9 grandit plus vite que les places du FCZ. On grandit aussi — jusqu\'au Letzigrund.',
+      IT:'Kreis 9 cresce più dei piazzamenti del FCZ. Cresciamo con lui — anche al Letzigrund.',
+      ES:'Kreis 9 crece más rápido que las posiciones del FCZ. Nosotros también — hasta el Letzigrund.'} },
+  { slug:'albisrieden', type:'city', eta:50,
+    names:{DE:'Albisrieden (Kreis 9)',EN:'Albisrieden (Kreis 9)',FR:'Albisrieden (Kreis 9)',IT:'Albisrieden (Kreis 9)',ES:'Albisrieden (Kreis 9)'},
+    jokes:{
+      DE:'Lindenplatz-Familien-Cargo mit Kindern an Bord. Wir reparieren bevor die Quengelei losgeht.',
+      EN:'Lindenplatz family cargo with kids onboard. We fix it before the whining starts.',
+      FR:'Cargo familial Lindenplatz avec enfants. On répare avant le concert de pleurs.',
+      IT:'Cargo familiare Lindenplatz con bambini a bordo. Ripariamo prima dei pianti.',
+      ES:'Cargo familiar Lindenplatz con niños a bordo. Reparamos antes de que empiecen los lloros.'} },
+  { slug:'wipkingen', type:'city', eta:50,
+    names:{DE:'Wipkingen (Kreis 10)',EN:'Wipkingen (Kreis 10)',FR:'Wipkingen (Kreis 10)',IT:'Wipkingen (Kreis 10)',ES:'Wipkingen (Kreis 10)'},
+    jokes:{
+      DE:'Bahnhof Wipkingen, fünf Minuten von der Hardbrücke. Klassisches Notfall-Rendezvous.',
+      EN:'Wipkingen station, five minutes from Hardbrücke. Classic emergency rendezvous.',
+      FR:'Gare Wipkingen, cinq minutes de la Hardbrücke. Lieu d\'urgence classique.',
+      IT:'Stazione Wipkingen, cinque minuti dalla Hardbrücke. Classico ritrovo d\'emergenza.',
+      ES:'Estación Wipkingen, cinco minutos de la Hardbrücke. Punto clásico de urgencias.'} },
+  { slug:'hoengg', type:'city', eta:55,
+    names:{DE:'Höngg (Kreis 10)',EN:'Höngg (Kreis 10)',FR:'Höngg (Kreis 10)',IT:'Höngg (Kreis 10)',ES:'Höngg (Kreis 10)'},
+    jokes:{
+      DE:'Werdinsel im Sommer, Höngg-Hügel im Winter. Beides braucht ab und zu neue Bremsbeläge.',
+      EN:'Werdinsel in summer, Höngg hill in winter. Both occasionally need new brake pads.',
+      FR:'Werdinsel l\'été, colline de Höngg l\'hiver. Les deux veulent parfois de nouvelles plaquettes.',
+      IT:'Werdinsel d\'estate, collina di Höngg d\'inverno. Entrambe a volte chiedono pastiglie nuove.',
+      ES:'Werdinsel en verano, colina de Höngg en invierno. Ambas piden pastillas nuevas a veces.'} },
+  { slug:'affoltern', type:'city', eta:55,
+    names:{DE:'Affoltern (Kreis 11)',EN:'Affoltern (Kreis 11)',FR:'Affoltern (Kreis 11)',IT:'Affoltern (Kreis 11)',ES:'Affoltern (Kreis 11)'},
+    jokes:{
+      DE:'Neue Wohnsiedlungen, neue Veloräume. Genossenschafts-Aktionstage hier? Stark im Aufbau.',
+      EN:'New estates, new bike rooms. Co-op service days here? Strong build-up.',
+      FR:'Nouveaux ensembles, nouveaux locaux à vélos. Journées coopératives en plein essor.',
+      IT:'Nuovi complessi, nuove sale bici. Giornate cooperative in forte crescita.',
+      ES:'Nuevos bloques, nuevas salas de bicis. Jornadas en cooperativas en pleno auge.'} },
+  { slug:'oerlikon', type:'city', eta:50,
+    names:{DE:'Oerlikon (Kreis 11)',EN:'Oerlikon (Kreis 11)',FR:'Oerlikon (Kreis 11)',IT:'Oerlikon (Kreis 11)',ES:'Oerlikon (Kreis 11)'},
+    jokes:{
+      DE:'Hallenstadion-Konzert, ZSC-Heimspiel, Messe — wir sind schneller als sich die Tramendstation füllt.',
+      EN:'Hallenstadion concert, ZSC home game, Messe — we beat the tram terminus crowds.',
+      FR:'Concert au Hallenstadion, match du ZSC, foire — on bat la foule du terminus.',
+      IT:'Concerto Hallenstadion, partita ZSC, fiera — battiamo la folla al capolinea.',
+      ES:'Concierto en el Hallenstadion, partido del ZSC, feria — ganamos a la multitud del terminal.'} },
+  { slug:'seebach', type:'city', eta:55,
+    names:{DE:'Seebach (Kreis 11)',EN:'Seebach (Kreis 11)',FR:'Seebach (Kreis 11)',IT:'Seebach (Kreis 11)',ES:'Seebach (Kreis 11)'},
+    jokes:{
+      DE:'Wachstumsquartier mit Familien-Velos. E-Bike-Wartung vor dem Schulwochen-Stress: beliebt.',
+      EN:'Growing area with family bikes. E-bike service before the school-week chaos: popular.',
+      FR:'Quartier en croissance, vélos familiaux. Service e-bike avant le chaos scolaire — demandé.',
+      IT:'Zona in crescita, bici di famiglia. Servizio e-bike prima del caos scolastico — richiesto.',
+      ES:'Zona en crecimiento, bicis familiares. Servicio e-bike antes del caos escolar — popular.'} },
+  { slug:'schwamendingen', type:'city', eta:55,
+    names:{DE:'Schwamendingen (Kreis 12)',EN:'Schwamendingen (Kreis 12)',FR:'Schwamendingen (Kreis 12)',IT:'Schwamendingen (Kreis 12)',ES:'Schwamendingen (Kreis 12)'},
+    jokes:{
+      DE:'Grosse Genossenschafts-Siedlungen, viele Velos. Aktionstag = 8 Velos pro Vormittag.',
+      EN:'Large co-op estates, lots of bikes. Service day = 8 bikes per morning.',
+      FR:'Grands ensembles, beaucoup de vélos. Journée de service = 8 vélos le matin.',
+      IT:'Grandi cooperative, molte bici. Giornata di servizio = 8 bici per mattinata.',
+      ES:'Grandes cooperativas, muchas bicis. Jornada de servicio = 8 bicis por mañana.'} },
+
+  /* ─── UMLAND ─── */
+  { slug:'schlieren', type:'umland', eta:60,
+    names:{DE:'Schlieren',EN:'Schlieren',FR:'Schlieren',IT:'Schlieren',ES:'Schlieren'},
+    jokes:{
+      DE:'Westlich der Stadt — Same-day möglich. Anfahrt-Aufschlag CHF 20.',
+      EN:'West of the city — same-day possible. Travel surcharge CHF 20.',
+      FR:'À l\'ouest — le jour même possible. Supplément CHF 20.',
+      IT:'A ovest — stesso giorno possibile. Supplemento CHF 20.',
+      ES:'Al oeste — mismo día posible. Recargo CHF 20.'} },
+  { slug:'kilchberg', type:'umland', eta:65,
+    names:{DE:'Kilchberg',EN:'Kilchberg',FR:'Kilchberg',IT:'Kilchberg',ES:'Kilchberg'},
+    jokes:{
+      DE:'Heimat von Lindt-Schoggi und ordentlichen Wohnvierteln. Wir bringen Werkzeug, kein Schoggi.',
+      EN:'Home of Lindt chocolate and tidy neighbourhoods. We bring tools, not chocolate.',
+      FR:'Patrie du chocolat Lindt et de quartiers propres. On apporte des outils, pas du chocolat.',
+      IT:'Patria del cioccolato Lindt e di quartieri ordinati. Portiamo attrezzi, non cioccolato.',
+      ES:'Cuna del chocolate Lindt y barrios ordenados. Traemos herramientas, no chocolate.'} },
+  { slug:'zollikon', type:'umland', eta:60,
+    names:{DE:'Zollikon',EN:'Zollikon',FR:'Zollikon',IT:'Zollikon',ES:'Zollikon'},
+    jokes:{
+      DE:'Goldküste-Adresse, hochwertige Velos. Hausbesuch im Vorgarten? Selbstverständlich.',
+      EN:'Gold Coast address, premium bikes. House call in the front garden? Of course.',
+      FR:'Adresse Côte d\'Or, vélos haut de gamme. Visite au jardin ? Évidemment.',
+      IT:'Indirizzo Costa d\'Oro, bici pregiate. Visita in giardino? Ovvio.',
+      ES:'Dirección Costa de Oro, bicis premium. ¿Visita en el jardín? Por supuesto.'} },
+  { slug:'horgen', type:'umland', eta:80,
+    names:{DE:'Horgen',EN:'Horgen',FR:'Horgen',IT:'Horgen',ES:'Horgen'},
+    jokes:{
+      DE:'Südlich am See. Anfahrt etwas länger — aber wir kommen, wenn der Termin steht.',
+      EN:'South by the lake. Slightly longer travel — but we come if the slot is set.',
+      FR:'Au sud, près du lac. Trajet un peu plus long — mais on vient si le créneau est pris.',
+      IT:'A sud sul lago. Trasferta un po\' più lunga — veniamo se l\'orario è preso.',
+      ES:'Al sur junto al lago. Trayecto algo más largo — vamos si la cita está fija.'} },
+  { slug:'thalwil', type:'umland', eta:75,
+    names:{DE:'Thalwil',EN:'Thalwil',FR:'Thalwil',IT:'Thalwil',ES:'Thalwil'},
+    jokes:{
+      DE:'Pendler-Hochburg am Zürichsee. Wartung Samstag-Morgen, danach freier Tag. Klingt fair.',
+      EN:'Commuter hub on Lake Zürich. Service Saturday morning, free day after. Fair deal.',
+      FR:'Pôle de pendulaires sur le lac. Entretien samedi matin, journée libre après. Deal correct.',
+      IT:'Roccaforte di pendolari sul lago. Manutenzione sabato mattina, poi giornata libera.',
+      ES:'Bastión de pendulares en el lago. Servicio sábado mañana, día libre después. Justo.'} },
+  { slug:'opfikon', type:'umland', eta:65,
+    names:{DE:'Opfikon / Glattpark',EN:'Opfikon / Glattpark',FR:'Opfikon / Glattpark',IT:'Opfikon / Glattpark',ES:'Opfikon / Glattpark'},
+    jokes:{
+      DE:'Glattpark — moderne Wohnungen, viele E-Bikes. Wir füllen die Veloräume mit servicierten.',
+      EN:'Glattpark — modern flats, lots of e-bikes. We refill the bike rooms with serviced ones.',
+      FR:'Glattpark — appartements modernes, beaucoup de e-bikes. On remplit les locaux de vélos révisés.',
+      IT:'Glattpark — appartamenti moderni, molte e-bike. Riempiamo le sale di mezzi revisionati.',
+      ES:'Glattpark — pisos modernos, muchas e-bikes. Llenamos las salas con bicis revisadas.'} },
+  { slug:'glattbrugg', type:'umland', eta:70,
+    names:{DE:'Glattbrugg',EN:'Glattbrugg',FR:'Glattbrugg',IT:'Glattbrugg',ES:'Glattbrugg'},
+    jokes:{
+      DE:'Flughafen-Nähe. Falls dein Velo am Flughafen-Bahnhof streikt: ja, auch dort.',
+      EN:'Near the airport. If your bike strikes at the airport station: yes, there too.',
+      FR:'Près de l\'aéroport. Si votre vélo lâche à la gare aéroport : oui, on y va.',
+      IT:'Vicino all\'aeroporto. Se la tua bici molla alla stazione aeroporto: sì, ci veniamo.',
+      ES:'Cerca del aeropuerto. Si tu bici se rinde en la estación del aeropuerto: sí, también vamos.'} },
+  { slug:'wallisellen', type:'umland', eta:70,
+    names:{DE:'Wallisellen',EN:'Wallisellen',FR:'Wallisellen',IT:'Wallisellen',ES:'Wallisellen'},
+    jokes:{
+      DE:'Glatt-Center und Bürotürme. Mittagspausen-Reparatur möglich.',
+      EN:'Glatt-Center and office towers. Lunch-break repair possible.',
+      FR:'Glatt-Center et bureaux. Réparation pause-déjeuner possible.',
+      IT:'Glatt-Center e uffici. Riparazione in pausa pranzo possibile.',
+      ES:'Glatt-Center y oficinas. Reparación en la pausa de la comida posible.'} },
+  { slug:'duebendorf', type:'umland', eta:70,
+    names:{DE:'Dübendorf',EN:'Dübendorf',FR:'Dübendorf',IT:'Dübendorf',ES:'Dübendorf'},
+    jokes:{
+      DE:'Innovationspark und Familien. Beide brauchen funktionierende Velos.',
+      EN:'Innovation park and families. Both need bikes that work.',
+      FR:'Parc d\'innovation et familles. Tous deux ont besoin de vélos qui roulent.',
+      IT:'Parco innovazione e famiglie. Entrambi hanno bisogno di bici funzionanti.',
+      ES:'Parque de innovación y familias. Ambos necesitan bicis que funcionen.'} },
+  { slug:'ruemlang', type:'umland', eta:70,
+    names:{DE:'Rümlang',EN:'Rümlang',FR:'Rümlang',IT:'Rümlang',ES:'Rümlang'},
+    jokes:{
+      DE:'Nördlich von Zürich — feste Termine bevorzugt. Same-day nach Absprache.',
+      EN:'North of Zürich — fixed slots preferred. Same-day on request.',
+      FR:'Au nord de Zurich — créneaux fixes préférés. Le jour même sur demande.',
+      IT:'A nord di Zurigo — slot fissi preferiti. Stesso giorno su richiesta.',
+      ES:'Al norte de Zúrich — preferimos cita fija. Mismo día bajo demanda.'} },
+  { slug:'adliswil', type:'umland', eta:65,
+    names:{DE:'Adliswil',EN:'Adliswil',FR:'Adliswil',IT:'Adliswil',ES:'Adliswil'},
+    jokes:{
+      DE:'Sihltal-Pendler, Familien, viele Hügel. Bremsen-Service ist hier ein Klassiker.',
+      EN:'Sihltal commuters, families, many hills. Brake service is the local classic.',
+      FR:'Pendulaires Sihltal, familles, collines. Le service freins est le classique local.',
+      IT:'Pendolari Sihltal, famiglie, colline. Il servizio freni è il classico.',
+      ES:'Pendulares de Sihltal, familias, colinas. El servicio de frenos es el clásico.'} }
 ];
 
-/* ===================================================================
-   LANGUAGE DETECTION
-=================================================================== */
-function detectVlLang(){
-  try{ if(window.wixDevelopersAnalytics&&window.wixDevelopersAnalytics.currentLanguage) return window.wixDevelopersAnalytics.currentLanguage.toLowerCase().substring(0,2); }catch(e){}
-  try{ var dl=document.documentElement.lang||''; if(dl) return dl.toLowerCase().substring(0,2); }catch(e){}
-  try{ var m=window.location.pathname.match(/^\/(en|fr|it|es)(\/|$)/i); if(m) return m[1].toLowerCase(); }catch(e){}
-  try{ var nav=(navigator.language||'de').toLowerCase().substring(0,2); if(['en','fr','it','es'].indexOf(nav)>-1) return nav; }catch(e){}
-  return 'de';
-}
-
-/* ===================================================================
-   MULTILINGUAL CONTENT
-=================================================================== */
-const VL_LANG = {
-
-  /* ── DEUTSCH ── */
-  de: {
-    seo: {
-      id:'locations-de',
-      h1:'VELOV Standorte Zürich – mobile Velowerkstatt in allen Quartieren',
-      intro:'VELOV bedient alle 12 Zürcher Stadtkreise und die Agglomeration. 100% mobil — wir kommen direkt zu dir. Reaktionszeit 30–75 Minuten je nach Quartier.',
-      sections:[
-        {h2:'Stadt Zürich — alle 12 Kreise', body:'Wir kommen in jeden Zürcher Stadtkreis. Anfahrt im Stadtgebiet CHF 49. Reaktionszeit in der Regel unter 45 Minuten.'},
-        {h2:'Agglomeration & Umland', body:'Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil. Anfahrt-Aufschlag CHF 20 je nach Distanz.'}
-      ],
-      faqs:[
-        {q:'Bedient ihr auch ausserhalb der Stadt?', a:'Ja, mit kleinem Anfahrts-Aufschlag von CHF 20.'},
-        {q:'Habt ihr einen festen Laden?', a:'Nein — 100% mobil. Wir kommen zu dir, wo du bist.'}
-      ],
-      contact:'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema:[
-        {"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://www.velov.ch/#business","name":"VELOV — Mobile Velowerkstatt Zürich","url":"https://www.velov.ch/standorte","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zürich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"areaServed":[{"@type":"City","name":"Zürich"},{"@type":"AdministrativeArea","name":"Kanton Zürich"}],"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"00:00","closes":"23:59"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"de","sameAs":["https://g.page/r/Cde-mb4tOTU-EAE"]},
-        {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.velov.ch"},{"@type":"ListItem","position":2,"name":"Standorte","item":"https://www.velov.ch/standorte"}]}
-      ]
-    },
-    ui:{
-      faqLabel:'Häufige Fragen', contactLabel:'Kontakt',
-      heroBadge:'22+ Quartiere · Ganz Zürich',
-      heroH1:'Zürichs schnellste mobile Velowerkstatt.',
-      heroSub:'Platten in Wiedikon? Velo hin in Oerlikon? Bremse versagt am Bürkliplatz? Wir kommen. Überall in Zürich. Meistens schneller als du eine freie Werkstatt findest.',
-      heroStats:[
-        {num:'22+', label:'Quartiere'},
-        {num:'4.8 ⭐', label:'Google'},
-        {num:'≤45 Min', label:'Reaktion Stadt'},
-        {num:'CHF 49', label:'Anfahrt fix'}
-      ],
-      pickerTitle:'📍 Wähl dis Quartier — mir sägeds dir sofort',
-      pickerLead:'Klick auf dein Quartier oder such direkt. Du kriegst deine persönliche Reaktionszeit und einen direkten WhatsApp-Link.',
-      searchPlaceholder:'z. B. Oerlikon, Wiedikon, Schlieren...',
-      filterAll:'Alle',
-      filterCity:'Stadt Zürich',
-      filterUmland:'Umland',
-      etaLabel:'Reaktionszeit ab Nachricht:',
-      etaUnit:'Minuten',
-      resultBookBtn: function(name){ return 'Jetzt in '+name+' buchen →'; },
-      waZoneMsg: function(name){ return 'Hi VELOV! Ich bin in '+name+' und brauche eine Velo-Reparatur. Wann kannst du da sein?'; },
-      storiesTitle:'Züri-Geschichten 🚴‍♂️',
-      storiesLead:'Wir kennen jeden Kopfsteinpflaster. Jede Tramschiene. Jede Steigung. Kurz: wir sind Züri.',
-      servicesTitle:'Unsere Services — überall gleich',
-      benefitsTitle:'Warum VELOV?',
-      ctaTitle:'Bereit, dein Velo reparieren zu lassen?',
-      ctaBody:'Same-day verfügbar. Wir kommen zu dir — in ganz Zürich & Umgebung.',
-      ctaBtn:'→ Jetzt per WhatsApp buchen',
-      orCall:'oder ruf an:',
-      waMainMsg:'Hi VELOV, ich brauche eine Reparatur in Zürich. Kannst du mir helfen?',
-      cityBadge:'🏢 Stadt',
-      umlandBadge:'🏘️ Umland',
-      minuteUnit:'Min'
-    },
+const VELOV_LOC_I18N = {
+  DE: {
+    seoH1:'VELOV Standorte Zürich – mobile Velowerkstatt in allen Quartieren',
+    seoIntro:'VELOV bedient alle 12 Zürcher Stadtkreise und die Agglomeration. Wir sind mobil – kein fester Standort, sondern direkt bei dir. Hier eine Übersicht unserer Service-Quartiere mit ehrlichen Reaktionszeiten.',
+    heroH1:'Mobile Veloreparatur — in ganz Züri & Umland',
+    heroP:'VELOV kommt zu dir. 30+ Quartiere & Gemeinden. Same-day-Buchung. 30–90 Min Reaktionszeit – meistens.',
+    heroSub:'Stadt Zürich · Schlieren · Kilchberg · Zollikon · Opfikon · Wallisellen · Dübendorf · Adliswil · und mehr',
+    didYouKnowLabel:'🎲 Züri-Wahrheit',
+    didYouKnow:[
+      'Auf der Bahnhofstrasse Velo zu fahren ist wie Yoga: langsam atmen, niemandem reinfahren.',
+      'Sechseläuten 2025: der Böögg explodierte nach 50 Min. Ein Velov-Plattfuss-Service ist schneller.',
+      'Der Üetliberg ist 871 m hoch. Mit kaputter Schaltung fühlt er sich an wie 2871 m.',
+      'Der Föhn drückt im Winter über 100 km/h auf den Üetliberg. Schuld an deinem Plattfuss? Vielleicht.',
+      '"Das Tram fährt eh in 4 Minuten" — sagt jeder Zürcher, immer. VELOV: meistens schneller.',
+      'Limmatschwumm 2024: 23\'000 Teilnehmende. Wir hoffen, niemand musste dabei sein Velo flicken.',
+      'Im Kreis 4 fahren mehr Velos als Autos. Wir sind dort fast Stammgäste.',
+      'Goldküste oder Pfnüselküste — wir kommen zu beiden Ufern.'
+    ],
+    pickerTitle:'📍 Wähl dein Quartier — sieh, wann wir da sind',
+    pickerLead:'Klick auf dein Quartier oder such direkt. Du kriegst eine ehrliche Reaktionszeit + direkte WhatsApp-Buchung. Probier verschiedene aus – jedes hat seine eigene Geschichte.',
+    searchPh:'z. B. Oerlikon, Wiedikon, Schlieren …',
+    chipAll:'Alle',
+    chipCity:'Stadt Zürich',
+    chipUmland:'Umland',
+    resultLead:'Geschätzte Reaktionszeit ab Anruf:',
+    resultMins:'Minuten',
+    ctaHere:'Jetzt in',
+    ctaBookSuffix:'buchen →',
+    waMsgFn:(n)=>`Hi VELOV, ich bin in ${n} und brauche eine Velo-Reparatur. Wann kannst du da sein?`,
+    servicesH2:'Unsere Services — überall gleicher Preis',
     services:[
-      {emoji:'🛞', name:'Platten Reparatur',  price:'99',  time:'30 Min'},
-      {emoji:'🔧', name:'Standard Service',   price:'179', time:'60–90 Min'},
-      {emoji:'🆘', name:'Notfall-Service',    price:'99',  time:'30–60 Min'},
-      {emoji:'⚡', name:'E-Bike Service',     price:'179', time:'60–90 Min'}
+      {emoji:'🛞',name:'Platten Reparatur',price:'99',time:'30 Min'},
+      {emoji:'🔧',name:'Komplette Wartung',price:'149',time:'60 Min'},
+      {emoji:'🆘',name:'Notfall-Service',price:'129',time:'30–60 Min'},
+      {emoji:'⚙️',name:'E-Bike Service',price:'229',time:'60–90 Min'}
     ],
+    beneH2:'Warum Zürich uns wählt',
     benefits:[
-      {emoji:'⚡', title:'Blitzschnell',    text:'Oft unter 45 Minuten in der Stadt. Same-day Buchung. 7 Tage die Woche.'},
-      {emoji:'📍', title:'100% Mobil',      text:'Wir kommen zu dir — Haustür, Büro, Bahnhof. Kein Schleppen, kein Transport.'},
-      {emoji:'💯', title:'Professionell',   text:'Ausgebildete Mechaniker. Alle Velo-Typen. Festpreise, keine Überraschungen.'},
-      {emoji:'💰', title:'Transparent',     text:'Preis vor Buchung bekannt. TWINT, Bar oder Rechnung. Einfach & ehrlich.'}
+      {emoji:'⚡',t:'Blitzschnell',p:'Oft in unter 1 Stunde vor Ort. Same-day-Buchung. 24h erreichbar.'},
+      {emoji:'📍',t:'Mobile Service',p:'Wir kommen zu dir. Keine Ladenöffnungszeiten. Keine Transportkosten.'},
+      {emoji:'💯',t:'Profi-Mechaniker',p:'500+ Google Reviews · 4.8 Sterne. Alle Velo-Typen, alle Marken.'},
+      {emoji:'💰',t:'Festpreis',p:'Preis bekannt vor der Buchung. Keine Überraschungen. TWINT, Bar, Karte.'}
     ],
-    /* Zone stories — Zürich personality, local references, fun */
-    stories:{
-      enge:             {title:'Enge & Bürkliplatz', story:'Am Bürkliplatz wissen alle: Zürich fährt Velo. Und wenn dann die Tramschiene den Reifen erwischt — wir sind da, bevor der nächste Tram kommt.'},
-      wollishofen:      {title:'Wollishofen', story:'Seebadi, Brunau, Morgensonne. Die perfekte Route — bis der Reifen aufgibt. Wir kommen zum See, damit du bald wieder am See bist.'},
-      leimbach:         {title:'Leimbach', story:'Das grüne Zürich. Waldwege, Sihlbrücken, Ruhe. Manchmal auch: Platten mitten im Nirgendwo. Wir kennen den Weg.'},
-      wiedikon:         {title:'Wiedikon', story:'Goldbrunnenplatz, Schmiede Wiedikon, Quartierbeiz. Das Herz von Zürich West. Dein Velo kennt diese Kopfsteinpflaster — manchmal zu gut.'},
-      aussersihl:       {title:'Aussersihl & Langstrasse', story:'Langstrasse um Mitternacht, Rote Fabrik am Nachmittag — Aussersihl schläft nie. Wir auch nicht. Platten-Notfall? Wir sind in 30 Minuten da.'},
-      industriequartier:{title:'Industriequartier', story:'Prime Tower, Schiffbau, Viadukt. Das alte Zürich trifft Startup-Flair. Und zwischen Velostationen und Hipster-Cafés: manchmal ein Platten. Wir kommen.'},
-      schwamendingen:   {title:'Schwamendingen', story:'Schwamendingen hat einen Ruf — zu Unrecht. Wir lieben dieses Quartier. Grosse Strassen, direkte Verbindungen, und ein Mechaniker, der auch dorthin kommt.'},
-      oerlikon:         {title:'Oerlikon', story:'MFO-Park, Hallenstadion, Max-Bill-Platz. Zürich Nord boomt. Kein Wunder, dass hier täglich hunderte Velos unterwegs sind. Und manchmal einer von uns.'},
-      hoengg:           {title:'Höngg', story:'Das Weinbauerdorf mitten in der Stadt. Steile Wege, Rebberge, Weitsicht. Hier kommt man per Velo — und wenn der Antrieb streikt, kommen wir.'},
-      affoltern:        {title:'Affoltern', story:'Ruhiges Nordquartier, viel Grün, kurze Wege zum Wald. VELOV kommt auch dorthin — und der Mechaniker kennt den Dorfkern.'},
-      seefeld:          {title:'Seefeld', story:'Seefeldstrasse, Opernhaus, Zürichhorn. Zürichs feinste Adresse. Natürlich kommen wir auch hier vorbei — Velos sind ja demokratisch.'},
-      witikon:          {title:'Witikon', story:'Zürichs höchstes Stadtquartier. Was da raufgeht, muss auch runterkommen. Wir reparieren bergauf und bergab.'},
-      hirslanden:       {title:'Hirslanden', story:'Grosser Zürichberg-Hang, Klinik, Villen. Viele E-Bikes hier — Stichwort Steigung. Mechanische Wartung vor Ort, Akku bleibt wie er ist.'},
-      schlieren:        {title:'Schlieren', story:'Direkt an der Stadtgrenze, fast schon Zürich. Die Limmat trennt uns kaum. Same-day Service wie in der Stadt — mit CHF 20 Umland-Zuschlag.'},
-      kilchberg:        {title:'Kilchberg', story:'Lindt & Sprüngli kommt von hier. Wir nicht — aber wir kommen trotzdem. Schokoladenduft inklusive, Platten-Fix auch.'},
-      ruemlang:         {title:'Rümlang', story:'Zwischen Zürich und Flughafen. Wer hier wohnt, kennt Flugzeuge und kurze Wege. Wir kennen auch den Weg dorthin.'},
-      opfikon:          {title:'Opfikon & Glattpark', story:'Neues Quartier, viele Pendler, viel Bewegung. Glattpark-Velowege sind toll — bis Kette oder Reifen streiken. Wir sind nah.'},
-      glattbrugg:       {title:'Glattbrugg', story:'Shoppi-Tivoli-Veloständer, Flughafen-Shuttles, Businesspark. VELOV kommt auch in die Agglomeration. Reaktionszeit ~65 Min.'},
-      wallisellen:      {title:'Wallisellen', story:'Östlich von Zürich, gut erschlossen. Hier fährt man viel Velo — und wir kommen, wenn es mal nicht mehr fährt.'},
-      zollikon:         {title:'Zollikon', story:'Zürichsee-Ufer, Villen, Ruhe. Ein Ort, wo Velo Lifestyle ist. Und wo ein guter Mechaniker hin kommt, wenn man ihn braucht.'},
-      horgen:           {title:'Horgen', story:'Mit dem Dampfschiff oder mit dem Velo am See — Horgen ist schön. Wir kommen auch dorthin, brauchen aber ~75 Min. Lohnt sich.'},
-      thalwil:          {title:'Thalwil', story:'Endstation Goldbahn, Anfang See. Thalwil ist der Süden — ruhig, schön, und VELOV kommt auch hierher.'}
-    },
-    faqs:[
-      {q:'Bedient ihr auch ausserhalb der Stadt Zürich?', a:'Ja — Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil und mehr. Kleiner Anfahrts-Aufschlag von CHF 20, sonst alles gleich.'},
-      {q:'Habt ihr einen festen Laden oder Standort?', a:'Nein — wir sind 100% mobil. Das ist unser Vorteil: wir kommen zu dir, egal wo du in Zürich bist. Kein Schleppen, kein Öffnungszeiten-Stress.'},
-      {q:'Wie schnell seid ihr in der Stadt Zürich?', a:'In der Regel unter 45 Minuten innerhalb der Stadtkreise 1–12. Bei Notfällen (Plattfuss) oft sogar noch schneller.'},
-      {q:'Wie erkenne ich, ob mein Quartier abgedeckt ist?', a:'Klick einfach auf dein Quartier oben — du siehst sofort deine Reaktionszeit und einen direkten WhatsApp-Buchungslink.'},
-      {q:'Was kostet die Anfahrt?', a:'Stadtgebiet Zürich CHF 49 fix. Umland CHF 49 + CHF 20 Aufschlag = CHF 69. Alles transparent vor der Buchung.'}
-    ]
+    finalH2:'Bereit fürs Flicken? Same-day verfügbar.',
+    finalP:'Wir kommen zu dir — ganz Züri und Umland.',
+    finalBtn:'→ Jetzt per WhatsApp buchen',
+    finalCallPrefix:'oder ruf an:',
+    waGeneric:'Hi VELOV, ich brauche eine Reparatur in Zürich. Kannst du mir helfen?'
   },
 
-  /* ── ENGLISH ── */
-  en: {
-    seo: {
-      id:'locations-en',
-      h1:'VELOV Locations Zurich – Mobile Bike Workshop in Every District',
-      intro:'VELOV covers all 12 Zurich city districts and the agglomeration. 100% mobile — we come to you. Response time 30–75 minutes depending on your district.',
-      sections:[
-        {h2:'City of Zurich — all 12 districts', body:'We come to every Zurich district. Travel fee in city CHF 49. Response time typically under 45 minutes.'},
-        {h2:'Agglomeration & surroundings', body:'Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil. Travel surcharge CHF 20 depending on distance.'}
-      ],
-      faqs:[
-        {q:'Do you cover areas outside the city?', a:'Yes, with a small travel surcharge of CHF 20.'},
-        {q:'Do you have a fixed shop?', a:'No — 100% mobile. We come to wherever you are.'}
-      ],
-      contact:'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema:[
-        {"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://www.velov.ch/#business","name":"VELOV — Mobile Bike Workshop Zurich","url":"https://www.velov.ch/en/locations","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"areaServed":[{"@type":"City","name":"Zurich"},{"@type":"AdministrativeArea","name":"Canton Zurich"}],"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"00:00","closes":"23:59"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"en","sameAs":["https://g.page/r/Cde-mb4tOTU-EAE"]},
-        {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.velov.ch/en"},{"@type":"ListItem","position":2,"name":"Locations","item":"https://www.velov.ch/en/locations"}]}
-      ]
-    },
-    ui:{
-      faqLabel:'Frequently Asked Questions', contactLabel:'Contact',
-      heroBadge:'22+ Neighbourhoods · All of Zurich',
-      heroH1:'Zurich\'s fastest mobile bike workshop.',
-      heroSub:'Flat tyre in Wiedikon? Chain snapped in Oerlikon? Brakes gone at Bürkliplatz? We come to you. Anywhere in Zurich. Usually faster than finding a bike shop with an open slot.',
-      heroStats:[
-        {num:'22+', label:'Neighbourhoods'},
-        {num:'4.8 ⭐', label:'Google'},
-        {num:'≤45 min', label:'City response'},
-        {num:'CHF 49', label:'Fixed travel'}
-      ],
-      pickerTitle:'📍 Pick your neighbourhood — see your ETA instantly',
-      pickerLead:'Click your area or search directly. You get a personal response time and a direct WhatsApp booking link.',
-      searchPlaceholder:'e.g. Oerlikon, Wiedikon, Schlieren...',
-      filterAll:'All',
-      filterCity:'Zurich City',
-      filterUmland:'Agglomeration',
-      etaLabel:'Response time from message:',
-      etaUnit:'minutes',
-      resultBookBtn: function(name){ return 'Book in '+name+' now →'; },
-      waZoneMsg: function(name){ return 'Hi VELOV! I\'m in '+name+' and need a bike repair. When can you come?'; },
-      storiesTitle:'Zurich Stories 🚴‍♂️',
-      storiesLead:'We know every cobblestone. Every tram rail. Every hill. In short: we know Zurich.',
-      servicesTitle:'Our services — same everywhere',
-      benefitsTitle:'Why VELOV?',
-      ctaTitle:'Ready to get your bike fixed?',
-      ctaBody:'Same-day available. We come to you — anywhere in Zurich & surroundings.',
-      ctaBtn:'→ Book now via WhatsApp',
-      orCall:'or call:',
-      waMainMsg:'Hi VELOV, I need a bike repair in Zurich. Can you help?',
-      cityBadge:'🏢 City',
-      umlandBadge:'🏘️ Suburbs',
-      minuteUnit:'min'
-    },
+  EN: {
+    seoH1:'VELOV Locations Zürich — mobile bike workshop across all districts',
+    seoIntro:'VELOV covers all 12 Zürich city districts and the surrounding region. We\'re mobile — no shop, we come straight to you. Here\'s an overview of our service area with honest reaction times.',
+    heroH1:'Mobile bike repair — all of Zürich & beyond',
+    heroP:'VELOV comes to you. 30+ neighbourhoods & towns. Same-day booking. 30–90 min reaction time — usually.',
+    heroSub:'Zürich city · Schlieren · Kilchberg · Zollikon · Opfikon · Wallisellen · Dübendorf · Adliswil · and more',
+    didYouKnowLabel:'🎲 Zürich truth',
+    didYouKnow:[
+      'Cycling on Bahnhofstrasse is like yoga: breathe slowly, don\'t crash into anyone.',
+      'Sechseläuten 2025: the Böögg\'s head exploded after 50 minutes. A Velov flat repair is faster.',
+      'The Üetliberg is 871 m high. With broken gears it feels like 2,871 m.',
+      'In winter the Föhn wind hits the Üetliberg at 100+ km/h. To blame for your flat? Maybe.',
+      '"Tram\'s coming in 4 min anyway" — every Zürcher, always. VELOV: usually faster.',
+      'Limmatschwumm 2024: 23,000 swimmers. We hope no one had to fix their bike during it.',
+      'In Kreis 4 there are more bikes than cars. We\'re basically regulars.',
+      'Goldküste or Pfnüselküste — we come to both shores.'
+    ],
+    pickerTitle:'📍 Pick your area — see when we\'ll be there',
+    pickerLead:'Click your neighbourhood or search directly. You get an honest reaction time + direct WhatsApp booking. Try a few — each has its own story.',
+    searchPh:'e.g. Oerlikon, Wiedikon, Schlieren …',
+    chipAll:'All',
+    chipCity:'Zürich city',
+    chipUmland:'Surroundings',
+    resultLead:'Estimated reaction time from your call:',
+    resultMins:'minutes',
+    ctaHere:'Book in',
+    ctaBookSuffix:'now →',
+    waMsgFn:(n)=>`Hi VELOV, I am in ${n} and need a bike repair. When can you be here?`,
+    servicesH2:'Our services — same price everywhere',
     services:[
-      {emoji:'🛞', name:'Flat Tyre Repair',   price:'99',  time:'30 min'},
-      {emoji:'🔧', name:'Standard Service',   price:'179', time:'60–90 min'},
-      {emoji:'🆘', name:'Emergency Service',  price:'99',  time:'30–60 min'},
-      {emoji:'⚡', name:'E-Bike Service',     price:'179', time:'60–90 min'}
+      {emoji:'🛞',name:'Flat repair',price:'99',time:'30 min'},
+      {emoji:'🔧',name:'Full service',price:'149',time:'60 min'},
+      {emoji:'🆘',name:'Emergency',price:'129',time:'30–60 min'},
+      {emoji:'⚙️',name:'E-bike service',price:'229',time:'60–90 min'}
     ],
+    beneH2:'Why Zürich picks us',
     benefits:[
-      {emoji:'⚡', title:'Lightning fast',  text:'Often under 45 min in the city. Same-day booking. 7 days a week.'},
-      {emoji:'📍', title:'100% Mobile',     text:'We come to you — doorstep, office, station. No hauling, no transport.'},
-      {emoji:'💯', title:'Professional',    text:'Trained mechanics. All bike types. Fixed prices, no surprises.'},
-      {emoji:'💰', title:'Transparent',     text:'Price known before booking. TWINT, cash or invoice. Simple & honest.'}
+      {emoji:'⚡',t:'Lightning fast',p:'Often under 1 hour on-site. Same-day booking. 24 h reachable.'},
+      {emoji:'📍',t:'Mobile service',p:'We come to you. No shop hours. No transport costs.'},
+      {emoji:'💯',t:'Pro mechanics',p:'500+ Google reviews · 4.8 stars. Every bike type, every brand.'},
+      {emoji:'💰',t:'Fixed price',p:'Price known before booking. No surprises. TWINT, cash, card.'}
     ],
-    stories:{
-      enge:             {title:'Enge & Bürkliplatz', story:'The tram rails at Bürkliplatz have claimed more tyres than any pothole. We know — we\'ve been called there more times than we can count.'},
-      wollishofen:      {title:'Wollishofen', story:'Seebad, Brunau, morning sun on the lake. Perfect cycling territory — until the tyre gives up. We come to the lake so you can get back to the lake.'},
-      leimbach:         {title:'Leimbach', story:'Green Zurich at its best. Forest paths, Sihl bridges, calm. Sometimes also: flat tyre in the middle of nowhere. We know the way.'},
-      wiedikon:         {title:'Wiedikon', story:'Goldbrunnenplatz, neighbourhood pubs, cobblestones that have their own opinions about your tyres. We know Wiedikon like our own pocket.'},
-      aussersihl:       {title:'Aussersihl & Langstrasse', story:'Langstrasse at midnight, Rote Fabrik on a Sunday — Aussersihl never sleeps. Neither do we. Emergency flat? We\'re there in 30 minutes.'},
-      industriequartier:{title:'Industriequartier', story:'Prime Tower, Viadukt, Schiffbau. Old Zurich meets startup scene. And between bike racks and espresso bars: sometimes a flat. We\'ve got it.'},
-      schwamendingen:   {title:'Schwamendingen', story:'Schwamendingen has a reputation — unfairly. We love this neighbourhood. Big streets, good access, and a mechanic who actually shows up.'},
-      oerlikon:         {title:'Oerlikon', story:'MFO-Park, Hallenstadion, Max-Bill-Platz. Zurich North is booming. No wonder hundreds of bikes roll here daily. And sometimes we do too.'},
-      hoengg:           {title:'Höngg', story:'The vineyard village in the middle of the city. Steep lanes, grapes, views. You get there by bike — and when the drivetrain protests, we come to you.'},
-      affoltern:        {title:'Affoltern', story:'Quiet northern neighbourhood, lots of green, short routes to the forest. VELOV comes there too — and our mechanic knows the village centre.'},
-      seefeld:          {title:'Seefeld', story:'Seefeldstrasse, Opera House, Zürichhorn. Zurich\'s most elegant address. Of course we come here too — bikes are democratic.'},
-      witikon:          {title:'Witikon', story:'Zurich\'s highest city neighbourhood. What goes up must come down — and whatever breaks on the way, we fix.'},
-      hirslanden:       {title:'Hirslanden', story:'Big Zürichberg slope, clinic, villas. Lots of e-bikes here — see: gradient. Mechanical service on-site. Battery stays as-is.'},
-      schlieren:        {title:'Schlieren', story:'Right on the city border, almost Zurich already. The Limmat barely separates us. Same-day service like in the city — plus CHF 20 surcharge.'},
-      kilchberg:        {title:'Kilchberg', story:'Lindt & Sprüngli is from here. We\'re not — but we come anyway. Smell of chocolate included, flat fix too.'},
-      ruemlang:         {title:'Rümlang', story:'Between Zurich and the airport. Whoever lives here knows planes and short distances. We know the way too.'},
-      opfikon:          {title:'Opfikon & Glattpark', story:'New neighbourhood, lots of commuters, lots of movement. Glattpark cycle paths are great — until chain or tyre disagrees. We\'re nearby.'},
-      glattbrugg:       {title:'Glattbrugg', story:'Shoppi Tivoli bike racks, airport shuttles, business parks. VELOV comes to the agglomeration too. Response ~65 min.'},
-      wallisellen:      {title:'Wallisellen', story:'East of Zurich, well connected. Lots of cycling here — and we come when it stops working.'},
-      zollikon:         {title:'Zollikon', story:'Lake Zurich shore, villas, quiet. A place where cycling is a lifestyle. And where a good mechanic comes when needed.'},
-      horgen:           {title:'Horgen', story:'Steamboat or bike along the lake — Horgen is beautiful. We come there too, give us ~75 min. Worth it.'},
-      thalwil:          {title:'Thalwil', story:'End of the Goldbahn, start of the lake. Thalwil is the south — calm, beautiful, and VELOV comes here too.'}
-    },
-    faqs:[
-      {q:'Do you cover areas outside Zurich city?', a:'Yes — Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil and more. Small travel surcharge of CHF 20, everything else the same.'},
-      {q:'Do you have a fixed shop or location?', a:'No — 100% mobile. That\'s our advantage: we come to you wherever you are in Zurich. No hauling, no opening hours stress.'},
-      {q:'How fast are you in Zurich city?', a:'Typically under 45 minutes within city districts 1–12. For emergencies (flat tyre) often even faster.'},
-      {q:'How do I know if my area is covered?', a:'Just click your neighbourhood above — you instantly see your response time and a direct WhatsApp booking link.'},
-      {q:'What does the travel fee cost?', a:'Zurich city CHF 49 fixed. Agglomeration CHF 49 + CHF 20 surcharge = CHF 69. All transparent before booking.'}
-    ]
+    finalH2:'Ready to fix? Same-day available.',
+    finalP:'We come to you — all of Zürich and surroundings.',
+    finalBtn:'→ Book on WhatsApp',
+    finalCallPrefix:'or call:',
+    waGeneric:'Hi VELOV, I need a bike repair in Zürich. Can you help?'
   },
 
-  /* ── FRANÇAIS ── */
-  fr: {
-    seo: {
-      id:'locations-fr',
-      h1:'VELOV Zones Zurich – Atelier Vélo Mobile dans Tous les Quartiers',
-      intro:'VELOV couvre les 12 arrondissements de Zurich et l\'agglomération. 100% mobile — nous venons chez vous. Délai d\'intervention 30–75 minutes selon le quartier.',
-      sections:[
-        {h2:'Ville de Zurich — 12 arrondissements', body:'Nous intervenons dans chaque arrondissement. Déplacement en ville CHF 49. Délai d\'intervention en général sous 45 minutes.'},
-        {h2:'Agglomération', body:'Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil. Supplément déplacement CHF 20 selon distance.'}
-      ],
-      faqs:[
-        {q:'Intervenez-vous hors de la ville ?', a:'Oui, avec un petit supplément de déplacement de CHF 20.'},
-        {q:'Avez-vous une boutique fixe ?', a:'Non — 100% mobile. Nous venons chez vous.'}
-      ],
-      contact:'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema:[
-        {"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://www.velov.ch/#business","name":"VELOV — Atelier Vélo Mobile Zurich","url":"https://www.velov.ch/fr/locations","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"fr","sameAs":["https://g.page/r/Cde-mb4tOTU-EAE"]},
-        {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.velov.ch/fr"},{"@type":"ListItem","position":2,"name":"Zones","item":"https://www.velov.ch/fr/locations"}]}
-      ]
-    },
-    ui:{
-      faqLabel:'Questions fréquentes', contactLabel:'Contact',
-      heroBadge:'22+ Quartiers · Tout Zurich',
-      heroH1:'L\'atelier vélo mobile le plus rapide de Zurich.',
-      heroSub:'Crevaison à Wiedikon ? Chaîne cassée à Oerlikon ? Freins morts au Bürkliplatz ? Nous venons. Partout à Zurich. Souvent plus vite que vous ne trouvez un atelier disponible.',
-      heroStats:[
-        {num:'22+', label:'Quartiers'},
-        {num:'4.8 ⭐', label:'Google'},
-        {num:'≤45 min', label:'Réponse ville'},
-        {num:'CHF 49', label:'Déplacement fixe'}
-      ],
-      pickerTitle:'📍 Choisissez votre quartier — voyez votre délai instantanément',
-      pickerLead:'Cliquez sur votre zone ou cherchez directement. Vous obtenez votre délai personnalisé et un lien WhatsApp direct.',
-      searchPlaceholder:'ex. Oerlikon, Wiedikon, Schlieren...',
-      filterAll:'Tous',
-      filterCity:'Ville de Zurich',
-      filterUmland:'Agglomération',
-      etaLabel:'Délai d\'intervention depuis message :',
-      etaUnit:'minutes',
-      resultBookBtn: function(name){ return 'Réserver à '+name+' maintenant →'; },
-      waZoneMsg: function(name){ return 'Bonjour VELOV ! Je suis à '+name+' et j\'ai besoin d\'une réparation vélo. Quand pouvez-vous venir ?'; },
-      storiesTitle:'Histoires de Zurich 🚴‍♂️',
-      storiesLead:'Nous connaissons chaque pavé. Chaque rail de tram. Chaque côte. Bref : nous connaissons Zurich.',
-      servicesTitle:'Nos services — partout identiques',
-      benefitsTitle:'Pourquoi VELOV ?',
-      ctaTitle:'Prêt à faire réparer votre vélo ?',
-      ctaBody:'Disponible le jour même. Nous venons chez vous — partout à Zurich et alentours.',
-      ctaBtn:'→ Réserver via WhatsApp',
-      orCall:'ou appelez :',
-      waMainMsg:'Bonjour VELOV, j\'ai besoin d\'une réparation vélo à Zurich. Pouvez-vous m\'aider ?',
-      cityBadge:'🏢 Ville',
-      umlandBadge:'🏘️ Agglomération',
-      minuteUnit:'min'
-    },
+  FR: {
+    seoH1:'Sites VELOV Zurich — atelier vélo mobile dans tous les quartiers',
+    seoIntro:'VELOV couvre les 12 arrondissements de Zurich et l\'agglomération. Nous sommes mobiles — pas de boutique, nous venons à vous. Voici notre zone de service avec des temps d\'arrivée honnêtes.',
+    heroH1:'Réparation vélo mobile — tout Zurich & au-delà',
+    heroP:'VELOV vient à vous. 30+ quartiers & communes. Réservation le jour même. 30–90 min — en général.',
+    heroSub:'Ville de Zurich · Schlieren · Kilchberg · Zollikon · Opfikon · Wallisellen · Dübendorf · Adliswil · et plus',
+    didYouKnowLabel:'🎲 Vérité zurichoise',
+    didYouKnow:[
+      'Faire du vélo sur la Bahnhofstrasse, c\'est du yoga : respirer doucement, ne percuter personne.',
+      'Sechseläuten 2025 : la tête du Böögg a explosé après 50 minutes. Une crevaison Velov, plus rapide.',
+      'L\'Üetliberg fait 871 m. Avec un dérailleur cassé, on dirait 2871 m.',
+      'En hiver, le Föhn dépasse 100 km/h sur l\'Üetliberg. Coupable de votre crevaison ? Peut-être.',
+      '« Le tram arrive dans 4 min de toute façon » — chaque Zurichois, toujours. VELOV : souvent plus vite.',
+      'Limmatschwumm 2024 : 23 000 nageurs. On espère qu\'aucun n\'a dû réparer son vélo pendant.',
+      'Dans le Kreis 4, il y a plus de vélos que de voitures. On y est presque chez nous.',
+      'Goldküste ou Pfnüselküste — on dessert les deux rives.'
+    ],
+    pickerTitle:'📍 Choisissez votre quartier — voyez quand on arrive',
+    pickerLead:'Cliquez sur votre quartier ou cherchez. Temps de réaction honnête + réservation WhatsApp directe. Essayez-en plusieurs — chacun a son histoire.',
+    searchPh:'ex. Oerlikon, Wiedikon, Schlieren …',
+    chipAll:'Tous',
+    chipCity:'Ville Zurich',
+    chipUmland:'Environs',
+    resultLead:'Temps de réaction estimé après votre appel :',
+    resultMins:'minutes',
+    ctaHere:'Réserver à',
+    ctaBookSuffix:'maintenant →',
+    waMsgFn:(n)=>`Bonjour VELOV, je suis à ${n} et j\'ai besoin d\'une réparation vélo. Quand pouvez-vous venir ?`,
+    servicesH2:'Nos services — même prix partout',
     services:[
-      {emoji:'🛞', name:'Réparation crevaison', price:'99',  time:'30 min'},
-      {emoji:'🔧', name:'Service Standard',     price:'179', time:'60–90 min'},
-      {emoji:'🆘', name:'Service d\'urgence',   price:'99',  time:'30–60 min'},
-      {emoji:'⚡', name:'Service E-Bike',       price:'179', time:'60–90 min'}
+      {emoji:'🛞',name:'Réparation crevaison',price:'99',time:'30 min'},
+      {emoji:'🔧',name:'Service complet',price:'149',time:'60 min'},
+      {emoji:'🆘',name:'Urgence',price:'129',time:'30–60 min'},
+      {emoji:'⚙️',name:'Service e-bike',price:'229',time:'60–90 min'}
     ],
+    beneH2:'Pourquoi Zurich nous choisit',
     benefits:[
-      {emoji:'⚡', title:'Ultra rapide',      text:'Souvent moins de 45 min en ville. Réservation le jour même. 7 jours sur 7.'},
-      {emoji:'📍', title:'100% Mobile',       text:'Nous venons chez vous — domicile, bureau, gare. Sans transport, sans stress.'},
-      {emoji:'💯', title:'Professionnel',     text:'Mécaniciens formés. Tous types de vélos. Prix fixes, sans surprises.'},
-      {emoji:'💰', title:'Transparent',       text:'Prix connu avant réservation. TWINT, espèces ou facture. Simple et honnête.'}
+      {emoji:'⚡',t:'Ultra-rapide',p:'Souvent moins d\'1 heure sur place. Réservation le jour même. Joignables 24 h.'},
+      {emoji:'📍',t:'Service mobile',p:'On vient à vous. Pas d\'horaires de magasin. Pas de frais de transport.'},
+      {emoji:'💯',t:'Mécanos pros',p:'500+ avis Google · 4.8 étoiles. Tous types de vélos, toutes marques.'},
+      {emoji:'💰',t:'Prix fixe',p:'Prix connu avant réservation. Pas de surprise. TWINT, cash, carte.'}
     ],
-    stories:{
-      enge:             {title:'Enge & Bürkliplatz', story:'Les rails du tram au Bürkliplatz ont eu raison de plus de pneus qu\'aucun nid-de-poule. Nous le savons — on nous appelle là-bas plus souvent qu\'on ne peut compter.'},
-      wollishofen:      {title:'Wollishofen', story:'Seebad, Brunau, soleil du matin sur le lac. Territoire cycliste parfait — jusqu\'à ce que le pneu abandonne. Nous venons au bord du lac pour que vous puissiez y retourner.'},
-      leimbach:         {title:'Leimbach', story:'Le Zurich vert à son meilleur. Sentiers forestiers, ponts de la Sihl, calme. Parfois aussi : crevaison au milieu de nulle part. Nous connaissons le chemin.'},
-      wiedikon:         {title:'Wiedikon', story:'Goldbrunnenplatz, bistrots de quartier, pavés qui ont leur propre avis sur vos pneus. Nous connaissons Wiedikon comme notre poche.'},
-      aussersihl:       {title:'Aussersihl & Langstrasse', story:'La Langstrasse à minuit, la Rote Fabrik un dimanche — Aussersihl ne dort jamais. Nous non plus. Urgence crevaison ? Nous sommes là en 30 minutes.'},
-      industriequartier:{title:'Industriequartier', story:'Prime Tower, Viadukt, Schiffbau. Le vieux Zurich rencontre la scène startup. Et entre racks à vélos et espressos : parfois une crevaison. On s\'en occupe.'},
-      schwamendingen:   {title:'Schwamendingen', story:'Schwamendingen a une réputation — injustement. Nous adorons ce quartier. Grandes rues, bon accès, et un mécanicien qui vient vraiment.'},
-      oerlikon:         {title:'Oerlikon', story:'MFO-Park, Hallenstadion, Max-Bill-Platz. Zurich Nord est en plein essor. Pas étonnant que des centaines de vélos y roulent chaque jour. Et parfois nous aussi.'},
-      hoengg:           {title:'Höngg', story:'Le village viticole au cœur de la ville. Ruelles escarpées, vignes, panorama. On y va à vélo — et quand la transmission proteste, nous venons.'},
-      affoltern:        {title:'Affoltern', story:'Quartier nord tranquille, beaucoup de vert, courtes routes vers la forêt. VELOV y vient aussi — et notre mécanicien connaît le centre du village.'},
-      seefeld:          {title:'Seefeld', story:'Seefeldstrasse, Opéra, Zürichhorn. L\'adresse la plus élégante de Zurich. Bien sûr que nous venons aussi — les vélos sont démocratiques.'},
-      witikon:          {title:'Witikon', story:'Le quartier le plus haut de Zurich. Ce qui monte doit redescendre — et ce qui casse en chemin, nous le réparons.'},
-      hirslanden:       {title:'Hirslanden', story:'Grand versant du Zürichberg, clinique, villas. Beaucoup d\'e-bikes ici — voir : dénivelé. Service mécanique sur place. La batterie reste comme elle est.'},
-      schlieren:        {title:'Schlieren', story:'À la frontière de la ville, presque Zurich déjà. La Limmat nous sépare à peine. Service le jour même comme en ville — plus CHF 20 de supplément.'},
-      kilchberg:        {title:'Kilchberg', story:'Lindt & Sprüngli vient d\'ici. Nous non — mais nous venons quand même. Odeur de chocolat comprise, réparation de crevaison aussi.'},
-      ruemlang:         {title:'Rümlang', story:'Entre Zurich et l\'aéroport. Qui habite ici connaît les avions et les courtes distances. Nous connaissons aussi le chemin.'},
-      opfikon:          {title:'Opfikon & Glattpark', story:'Nouveau quartier, beaucoup de pendulaires, beaucoup de mouvement. Les pistes cyclables du Glattpark sont super — jusqu\'à ce que la chaîne ou le pneu refuse. Nous sommes proches.'},
-      glattbrugg:       {title:'Glattbrugg', story:'Racks à vélos du Shoppi Tivoli, navettes aéroport, parcs d\'affaires. VELOV vient aussi dans l\'agglomération. Délai ~65 min.'},
-      wallisellen:      {title:'Wallisellen', story:'À l\'est de Zurich, bien desservi. On y fait beaucoup de vélo — et nous venons quand ça ne roule plus.'},
-      zollikon:         {title:'Zollikon', story:'Rive du lac de Zurich, villas, calme. Un endroit où le vélo est un art de vivre. Et où un bon mécanicien vient quand on en a besoin.'},
-      horgen:           {title:'Horgen', story:'En bateau à vapeur ou à vélo le long du lac — Horgen est magnifique. Nous y venons aussi, comptez ~75 min. Ça vaut la peine.'},
-      thalwil:          {title:'Thalwil', story:'Terminus du Goldbahn, début du lac. Thalwil c\'est le sud — calme, beau, et VELOV y vient aussi.'}
-    },
-    faqs:[
-      {q:'Intervenez-vous hors de la ville de Zurich ?', a:'Oui — Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil et plus. Petit supplément de CHF 20, tout le reste identique.'},
-      {q:'Avez-vous une boutique ou un lieu fixe ?', a:'Non — 100% mobile. C\'est notre avantage : nous venons chez vous où que vous soyez à Zurich. Sans transport, sans contrainte d\'horaires.'},
-      {q:'À quelle vitesse intervenez-vous en ville ?', a:'En général moins de 45 minutes dans les arrondissements 1–12. Pour les urgences (crevaison) souvent encore plus vite.'},
-      {q:'Comment savoir si mon quartier est couvert ?', a:'Cliquez simplement sur votre quartier ci-dessus — vous voyez immédiatement votre délai et un lien de réservation WhatsApp direct.'},
-      {q:'Combien coûte le déplacement ?', a:'Ville de Zurich CHF 49 fixe. Agglomération CHF 49 + CHF 20 supplément = CHF 69. Tout transparent avant la réservation.'}
-    ]
+    finalH2:'Prêt à réparer ? Le jour même disponible.',
+    finalP:'On vient à vous — tout Zurich et environs.',
+    finalBtn:'→ Réserver sur WhatsApp',
+    finalCallPrefix:'ou appelez :',
+    waGeneric:'Bonjour VELOV, j\'ai besoin d\'une réparation vélo à Zurich. Pouvez-vous m\'aider ?'
   },
 
-  /* ── ITALIANO ── */
-  it: {
-    seo: {
-      id:'locations-it',
-      h1:'VELOV Zone Zurigo – Officina Mobile in Tutti i Quartieri',
-      intro:'VELOV copre tutti i 12 circoli di Zurigo e l\'agglomerato. 100% mobile — veniamo da te. Tempi di risposta 30–75 minuti a seconda del quartiere.',
-      sections:[
-        {h2:'Città di Zurigo — 12 circoli', body:'Interveniamo in ogni circolo di Zurigo. Trasferta in città CHF 49. Tempo di risposta in genere sotto i 45 minuti.'},
-        {h2:'Agglomerato', body:'Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil. Supplemento trasferta CHF 20 a seconda della distanza.'}
-      ],
-      faqs:[
-        {q:'Intervenite anche fuori dalla città ?', a:'Sì, con un piccolo supplemento di CHF 20.'},
-        {q:'Avete un negozio fisso ?', a:'No — 100% mobile. Veniamo da te dove sei.'}
-      ],
-      contact:'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema:[
-        {"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://www.velov.ch/#business","name":"VELOV — Officina Mobile Biciclette Zurigo","url":"https://www.velov.ch/it/locations","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurigo","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"it","sameAs":["https://g.page/r/Cde-mb4tOTU-EAE"]},
-        {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.velov.ch/it"},{"@type":"ListItem","position":2,"name":"Zone","item":"https://www.velov.ch/it/locations"}]}
-      ]
-    },
-    ui:{
-      faqLabel:'Domande frequenti', contactLabel:'Contatto',
-      heroBadge:'22+ Quartieri · Tutta Zurigo',
-      heroH1:'L\'officina mobile più veloce di Zurigo.',
-      heroSub:'Foratura a Wiedikon? Catena rotta a Oerlikon? Freni morti al Bürkliplatz? Veniamo da te. Ovunque a Zurigo. Spesso più velocemente di quanto tu trovi un\'officina disponibile.',
-      heroStats:[
-        {num:'22+', label:'Quartieri'},
-        {num:'4.8 ⭐', label:'Google'},
-        {num:'≤45 min', label:'Risposta città'},
-        {num:'CHF 49', label:'Trasferta fissa'}
-      ],
-      pickerTitle:'📍 Scegli il tuo quartiere — vedi subito il tempo di risposta',
-      pickerLead:'Clicca sulla tua zona o cerca direttamente. Ottieni il tuo tempo di risposta personalizzato e un link WhatsApp diretto.',
-      searchPlaceholder:'es. Oerlikon, Wiedikon, Schlieren...',
-      filterAll:'Tutti',
-      filterCity:'Città di Zurigo',
-      filterUmland:'Agglomerato',
-      etaLabel:'Tempo di risposta dal messaggio:',
-      etaUnit:'minuti',
-      resultBookBtn: function(name){ return 'Prenota a '+name+' ora →'; },
-      waZoneMsg: function(name){ return 'Ciao VELOV! Sono a '+name+' e ho bisogno di una riparazione bici. Quando puoi venire?'; },
-      storiesTitle:'Storie di Zurigo 🚴‍♂️',
-      storiesLead:'Conosciamo ogni sampietrino. Ogni binario del tram. Ogni salita. In breve: conosciamo Zurigo.',
-      servicesTitle:'I nostri servizi — uguali ovunque',
-      benefitsTitle:'Perché VELOV?',
-      ctaTitle:'Pronto a far riparare la tua bici?',
-      ctaBody:'Disponibile lo stesso giorno. Veniamo da te — ovunque a Zurigo e dintorni.',
-      ctaBtn:'→ Prenota ora via WhatsApp',
-      orCall:'o chiama:',
-      waMainMsg:'Ciao VELOV, ho bisogno di una riparazione bici a Zurigo. Puoi aiutarmi?',
-      cityBadge:'🏢 Città',
-      umlandBadge:'🏘️ Agglomerato',
-      minuteUnit:'min'
-    },
+  IT: {
+    seoH1:'Sedi VELOV Zurigo — officina mobile in tutti i quartieri',
+    seoIntro:'VELOV copre tutti i 12 quartieri di Zurigo e l\'agglomerato. Siamo mobili — niente negozio, veniamo da te. Ecco la nostra zona di servizio con tempi onesti.',
+    heroH1:'Riparazione bici mobile — tutta Zurigo & dintorni',
+    heroP:'VELOV viene da te. 30+ quartieri & comuni. Prenotazione in giornata. 30–90 min di reazione — di solito.',
+    heroSub:'Città di Zurigo · Schlieren · Kilchberg · Zollikon · Opfikon · Wallisellen · Dübendorf · Adliswil · e altri',
+    didYouKnowLabel:'🎲 Verità zurighese',
+    didYouKnow:[
+      'Andare in bici sulla Bahnhofstrasse è come yoga: respirare piano, non investire nessuno.',
+      'Sechseläuten 2025: la testa del Böögg è esplosa dopo 50 min. Una foratura Velov è più rapida.',
+      'L\'Üetliberg è 871 m. Con il cambio rotto sembrano 2871 m.',
+      'D\'inverno il Föhn supera i 100 km/h sull\'Üetliberg. Colpa della tua foratura? Forse.',
+      '"Il tram passa fra 4 min comunque" — ogni zurighese, sempre. VELOV: di solito più veloce.',
+      'Limmatschwumm 2024: 23.000 nuotatori. Speriamo nessuno abbia dovuto riparare la bici durante.',
+      'Nel Kreis 4 ci sono più bici che auto. Siamo praticamente clienti abituali.',
+      'Goldküste o Pfnüselküste — copriamo entrambe le sponde.'
+    ],
+    pickerTitle:'📍 Scegli il quartiere — vedi quando arriviamo',
+    pickerLead:'Clicca sul quartiere o cerca. Tempo onesto + prenotazione WhatsApp diretta. Provane diversi — ognuno ha la sua storia.',
+    searchPh:'es. Oerlikon, Wiedikon, Schlieren …',
+    chipAll:'Tutti',
+    chipCity:'Città Zurigo',
+    chipUmland:'Dintorni',
+    resultLead:'Tempo di reazione stimato dalla chiamata:',
+    resultMins:'minuti',
+    ctaHere:'Prenota a',
+    ctaBookSuffix:'subito →',
+    waMsgFn:(n)=>`Ciao VELOV, sono a ${n} e ho bisogno di una riparazione. Quando puoi arrivare?`,
+    servicesH2:'I nostri servizi — stesso prezzo ovunque',
     services:[
-      {emoji:'🛞', name:'Riparazione foratura', price:'99',  time:'30 min'},
-      {emoji:'🔧', name:'Servizio Standard',    price:'179', time:'60–90 min'},
-      {emoji:'🆘', name:'Servizio Emergenza',   price:'99',  time:'30–60 min'},
-      {emoji:'⚡', name:'Servizio E-Bike',      price:'179', time:'60–90 min'}
+      {emoji:'🛞',name:'Riparazione foratura',price:'99',time:'30 min'},
+      {emoji:'🔧',name:'Servizio completo',price:'149',time:'60 min'},
+      {emoji:'🆘',name:'Emergenza',price:'129',time:'30–60 min'},
+      {emoji:'⚙️',name:'Servizio e-bike',price:'229',time:'60–90 min'}
     ],
+    beneH2:'Perché Zurigo ci sceglie',
     benefits:[
-      {emoji:'⚡', title:'Velocissimo',     text:'Spesso meno di 45 min in città. Prenotazione in giornata. 7 giorni su 7.'},
-      {emoji:'📍', title:'100% Mobile',     text:'Veniamo da te — porta di casa, ufficio, stazione. Senza trasporto, senza stress.'},
-      {emoji:'💯', title:'Professionale',   text:'Meccanici qualificati. Tutti i tipi di bici. Prezzi fissi, nessuna sorpresa.'},
-      {emoji:'💰', title:'Trasparente',     text:'Prezzo noto prima della prenotazione. TWINT, contanti o fattura. Semplice e onesto.'}
+      {emoji:'⚡',t:'Velocissimi',p:'Spesso meno di 1 ora sul posto. Prenotazione in giornata. Reperibili 24 h.'},
+      {emoji:'📍',t:'Servizio mobile',p:'Veniamo da te. Niente orari del negozio. Niente costi di trasporto.'},
+      {emoji:'💯',t:'Meccanici pro',p:'500+ recensioni Google · 4.8 stelle. Ogni tipo di bici, ogni marca.'},
+      {emoji:'💰',t:'Prezzo fisso',p:'Prezzo noto prima della prenotazione. TWINT, contanti, carta.'}
     ],
-    stories:{
-      enge:             {title:'Enge & Bürkliplatz', story:'I binari del tram al Bürkliplatz hanno bucato più pneumatici di qualsiasi buca. Lo sappiamo — ci chiamano lì più volte di quante riusciamo a contare.'},
-      wollishofen:      {title:'Wollishofen', story:'Seebad, Brunau, sole mattutino sul lago. Territorio ciclabile perfetto — finché il pneumatico si arrende. Veniamo al lago perché tu possa tornarci.'},
-      leimbach:         {title:'Leimbach', story:'Il Zurigo verde al suo meglio. Sentieri forestali, ponti sulla Sihl, tranquillità. A volte anche: foratura in mezzo al nulla. Conosciamo la strada.'},
-      wiedikon:         {title:'Wiedikon', story:'Goldbrunnenplatz, bistrot di quartiere, sampietrini con opinioni proprie sui tuoi pneumatici. Conosciamo Wiedikon come le nostre tasche.'},
-      aussersihl:       {title:'Aussersihl & Langstrasse', story:'La Langstrasse a mezzanotte, la Rote Fabrik la domenica — Aussersihl non dorme mai. Nemmeno noi. Foratura d\'emergenza? Siamo lì in 30 minuti.'},
-      industriequartier:{title:'Industriequartier', story:'Prime Tower, Viadukt, Schiffbau. La vecchia Zurigo incontra la scena startup. E tra rastrelliere e caffè speciality: a volte una foratura. Ci pensiamo noi.'},
-      schwamendingen:   {title:'Schwamendingen', story:'Schwamendingen ha una reputazione — ingiustamente. Amiamo questo quartiere. Strade ampie, buon accesso, e un meccanico che arriva davvero.'},
-      oerlikon:         {title:'Oerlikon', story:'MFO-Park, Hallenstadion, Max-Bill-Platz. Zurigo Nord è in piena espansione. Non c\'è da stupirsi che centinaia di bici scorrano qui ogni giorno. E a volte anche noi.'},
-      hoengg:           {title:'Höngg', story:'Il villaggio viticolo nel cuore della città. Vicoli ripidi, vigneti, panorami. Ci si arriva in bici — e quando la trasmissione protesta, veniamo noi.'},
-      affoltern:        {title:'Affoltern', story:'Quartiere nord tranquillo, molto verde, breve distanza dalla foresta. VELOV viene anche lì — e il nostro meccanico conosce il centro del paese.'},
-      seefeld:          {title:'Seefeld', story:'Seefeldstrasse, Opera, Zürichhorn. L\'indirizzo più elegante di Zurigo. Naturalmente veniamo anche qui — le bici sono democratiche.'},
-      witikon:          {title:'Witikon', story:'Il quartiere più alto di Zurigo. Quel che sale deve scendere — e quel che si rompe nel tragitto, lo ripariamo noi.'},
-      hirslanden:       {title:'Hirslanden', story:'Grande versante dello Zürichberg, clinica, ville. Molte e-bike qui — vedi: pendenza. Servizio meccanico in loco. La batteria rimane com\'è.'},
-      schlieren:        {title:'Schlieren', story:'Proprio sul confine della città, quasi già Zurigo. La Limmat ci separa appena. Servizio in giornata come in città — più CHF 20 di supplemento.'},
-      kilchberg:        {title:'Kilchberg', story:'Lindt & Sprüngli viene da qui. Noi no — ma veniamo lo stesso. Profumo di cioccolato incluso, riparazione foratura anche.'},
-      ruemlang:         {title:'Rümlang', story:'Tra Zurigo e l\'aeroporto. Chi abita qui conosce gli aerei e le distanze brevi. Conosciamo anche la strada.'},
-      opfikon:          {title:'Opfikon & Glattpark', story:'Quartiere nuovo, molti pendolari, molto movimento. Le piste ciclabili del Glattpark sono ottime — finché catena o pneumatico dissentono. Siamo vicini.'},
-      glattbrugg:       {title:'Glattbrugg', story:'Rastrelliere del Shoppi Tivoli, navette aeroporto, parchi aziendali. VELOV viene anche nell\'agglomerato. Tempo di risposta ~65 min.'},
-      wallisellen:      {title:'Wallisellen', story:'A est di Zurigo, ben collegata. Si pedala molto qui — e veniamo quando non funziona più.'},
-      zollikon:         {title:'Zollikon', story:'Riva del lago di Zurigo, ville, tranquillità. Un posto dove la bici è uno stile di vita. E dove un buon meccanico viene quando serve.'},
-      horgen:           {title:'Horgen', story:'In battello a vapore o in bici lungo il lago — Horgen è bellissima. Veniamo anche lì, dateci ~75 min. Ne vale la pena.'},
-      thalwil:          {title:'Thalwil', story:'Capolinea della Goldbahn, inizio del lago. Thalwil è il sud — tranquilla, bella, e VELOV viene anche qui.'}
-    },
-    faqs:[
-      {q:'Intervenite fuori dalla città di Zurigo ?', a:'Sì — Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil e altro. Piccolo supplemento di CHF 20, tutto il resto uguale.'},
-      {q:'Avete un negozio o una sede fissa ?', a:'No — 100% mobile. Questo è il nostro vantaggio: veniamo da te ovunque tu sia a Zurigo. Senza trasporto, senza stress da orari.'},
-      {q:'Quanto siete veloci in città ?', a:'In genere meno di 45 minuti nei circoli 1–12. Per emergenze (foratura) spesso anche più veloce.'},
-      {q:'Come so se la mia zona è coperta ?', a:'Clicca semplicemente sul tuo quartiere sopra — vedi subito il tuo tempo di risposta e un link di prenotazione WhatsApp diretto.'},
-      {q:'Quanto costa la trasferta ?', a:'Città di Zurigo CHF 49 fisso. Agglomerato CHF 49 + CHF 20 supplemento = CHF 69. Tutto trasparente prima della prenotazione.'}
-    ]
+    finalH2:'Pronto a riparare? Disponibili in giornata.',
+    finalP:'Veniamo da te — tutta Zurigo e dintorni.',
+    finalBtn:'→ Prenota su WhatsApp',
+    finalCallPrefix:'oppure chiama:',
+    waGeneric:'Ciao VELOV, ho bisogno di una riparazione bici a Zurigo. Puoi aiutarmi?'
   },
 
-  /* ── ESPAÑOL ── */
-  es: {
-    seo: {
-      id:'locations-es',
-      h1:'VELOV Zonas Zúrich – Taller Móvil en Todos los Barrios',
-      intro:'VELOV cubre los 12 distritos de Zúrich y el área metropolitana. 100% móvil — vamos a donde estés. Tiempo de respuesta 30–75 minutos según el barrio.',
-      sections:[
-        {h2:'Ciudad de Zúrich — 12 distritos', body:'Intervenimos en cada distrito de Zúrich. Desplazamiento en ciudad CHF 49. Tiempo de respuesta generalmente bajo 45 minutos.'},
-        {h2:'Área metropolitana', body:'Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil. Suplemento de desplazamiento CHF 20 según distancia.'}
-      ],
-      faqs:[
-        {q:'¿Cubrís zonas fuera de la ciudad ?', a:'Sí, con un pequeño suplemento de CHF 20.'},
-        {q:'¿Tenéis una tienda fija ?', a:'No — 100% móvil. Vamos a donde estés.'}
-      ],
-      contact:'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema:[
-        {"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://www.velov.ch/#business","name":"VELOV — Taller Móvil de Bicicletas Zúrich","url":"https://www.velov.ch/es/locations","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zúrich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"es","sameAs":["https://g.page/r/Cde-mb4tOTU-EAE"]},
-        {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://www.velov.ch/es"},{"@type":"ListItem","position":2,"name":"Zonas","item":"https://www.velov.ch/es/locations"}]}
-      ]
-    },
-    ui:{
-      faqLabel:'Preguntas frecuentes', contactLabel:'Contacto',
-      heroBadge:'22+ Barrios · Todo Zúrich',
-      heroH1:'El taller de bicicletas móvil más rápido de Zúrich.',
-      heroSub:'¿Pinchazo en Wiedikon? ¿Cadena rota en Oerlikon? ¿Frenos muertos en el Bürkliplatz? Vamos a donde estés. En toda Zúrich. Normalmente antes de que encuentres un taller disponible.',
-      heroStats:[
-        {num:'22+', label:'Barrios'},
-        {num:'4.8 ⭐', label:'Google'},
-        {num:'≤45 min', label:'Resp. ciudad'},
-        {num:'CHF 49', label:'Despl. fijo'}
-      ],
-      pickerTitle:'📍 Elige tu barrio — ve tu tiempo de respuesta al instante',
-      pickerLead:'Haz clic en tu zona o busca directamente. Obtienes tu tiempo de respuesta personalizado y un enlace WhatsApp directo.',
-      searchPlaceholder:'ej. Oerlikon, Wiedikon, Schlieren...',
-      filterAll:'Todos',
-      filterCity:'Ciudad de Zúrich',
-      filterUmland:'Área metropolitana',
-      etaLabel:'Tiempo de respuesta desde mensaje:',
-      etaUnit:'minutos',
-      resultBookBtn: function(name){ return 'Reservar en '+name+' ahora →'; },
-      waZoneMsg: function(name){ return '¡Hola VELOV! Estoy en '+name+' y necesito una reparación de bici. ¿Cuándo puedes venir?'; },
-      storiesTitle:'Historias de Zúrich 🚴‍♂️',
-      storiesLead:'Conocemos cada adoquín. Cada carril de tranvía. Cada cuesta. En resumen: conocemos Zúrich.',
-      servicesTitle:'Nuestros servicios — iguales en todas partes',
-      benefitsTitle:'¿Por qué VELOV?',
-      ctaTitle:'¿Listo para reparar tu bici?',
-      ctaBody:'Disponible el mismo día. Vamos a donde estés — en toda Zúrich y alrededores.',
-      ctaBtn:'→ Reservar ahora por WhatsApp',
-      orCall:'o llama:',
-      waMainMsg:'Hola VELOV, necesito una reparación de bici en Zúrich. ¿Puedes ayudarme?',
-      cityBadge:'🏢 Ciudad',
-      umlandBadge:'🏘️ Área metro.',
-      minuteUnit:'min'
-    },
+  ES: {
+    seoH1:'Ubicaciones VELOV Zúrich — taller móvil de bicis en todos los barrios',
+    seoIntro:'VELOV cubre los 12 barrios de Zúrich y la aglomeración. Somos móviles — sin tienda, vamos donde estés. Aquí nuestra zona de servicio con tiempos honestos.',
+    heroH1:'Reparación de bici móvil — todo Zúrich & alrededores',
+    heroP:'VELOV va a ti. 30+ barrios & municipios. Reserva el mismo día. 30–90 min de reacción — normalmente.',
+    heroSub:'Ciudad de Zúrich · Schlieren · Kilchberg · Zollikon · Opfikon · Wallisellen · Dübendorf · Adliswil · y más',
+    didYouKnowLabel:'🎲 Verdad de Zúrich',
+    didYouKnow:[
+      'Ir en bici por la Bahnhofstrasse es como yoga: respirar despacio, no chocar con nadie.',
+      'Sechseläuten 2025: la cabeza del Böögg estalló a los 50 min. Un pinchazo Velov es más rápido.',
+      'El Üetliberg mide 871 m. Con cambios rotos parece 2.871 m.',
+      'En invierno el Föhn supera los 100 km/h en el Üetliberg. ¿Culpable de tu pinchazo? Puede.',
+      '"El tranvía llega en 4 min igual" — todo zuriqués, siempre. VELOV: normalmente más rápido.',
+      'Limmatschwumm 2024: 23.000 nadadores. Esperamos que nadie tuviera que arreglar la bici durante.',
+      'En el Kreis 4 hay más bicis que coches. Somos prácticamente habituales.',
+      'Goldküste o Pfnüselküste — cubrimos ambas orillas.'
+    ],
+    pickerTitle:'📍 Elige tu barrio — mira cuándo llegamos',
+    pickerLead:'Haz clic en tu barrio o busca. Tiempo honesto + reserva por WhatsApp. Prueba varios — cada uno tiene su historia.',
+    searchPh:'p. ej. Oerlikon, Wiedikon, Schlieren …',
+    chipAll:'Todos',
+    chipCity:'Ciudad Zúrich',
+    chipUmland:'Alrededores',
+    resultLead:'Tiempo estimado de reacción tras tu llamada:',
+    resultMins:'minutos',
+    ctaHere:'Reservar en',
+    ctaBookSuffix:'ya →',
+    waMsgFn:(n)=>`Hola VELOV, estoy en ${n} y necesito reparar la bici. ¿Cuándo puedes venir?`,
+    servicesH2:'Nuestros servicios — mismo precio en todas partes',
     services:[
-      {emoji:'🛞', name:'Reparación pinchazo', price:'99',  time:'30 min'},
-      {emoji:'🔧', name:'Servicio Estándar',   price:'179', time:'60–90 min'},
-      {emoji:'🆘', name:'Servicio Urgente',    price:'99',  time:'30–60 min'},
-      {emoji:'⚡', name:'Servicio E-Bike',     price:'179', time:'60–90 min'}
+      {emoji:'🛞',name:'Reparación pinchazo',price:'99',time:'30 min'},
+      {emoji:'🔧',name:'Servicio completo',price:'149',time:'60 min'},
+      {emoji:'🆘',name:'Urgencia',price:'129',time:'30–60 min'},
+      {emoji:'⚙️',name:'Servicio e-bike',price:'229',time:'60–90 min'}
     ],
+    beneH2:'Por qué Zúrich nos elige',
     benefits:[
-      {emoji:'⚡', title:'Ultrarrápido',    text:'A menudo menos de 45 min en la ciudad. Reserva el mismo día. 7 días a la semana.'},
-      {emoji:'📍', title:'100% Móvil',      text:'Vamos a donde estés — puerta, oficina, estación. Sin transporte, sin estrés.'},
-      {emoji:'💯', title:'Profesional',     text:'Mecánicos formados. Todos los tipos de bici. Precios fijos, sin sorpresas.'},
-      {emoji:'💰', title:'Transparente',    text:'Precio conocido antes de reservar. TWINT, efectivo o factura. Simple y honesto.'}
+      {emoji:'⚡',t:'Ultra rápidos',p:'A menudo menos de 1 hora in situ. Reserva el mismo día. 24 h disponibles.'},
+      {emoji:'📍',t:'Servicio móvil',p:'Vamos a ti. Sin horarios de tienda. Sin costes de transporte.'},
+      {emoji:'💯',t:'Mecánicos pro',p:'500+ reseñas Google · 4.8 estrellas. Todo tipo de bici, todas las marcas.'},
+      {emoji:'💰',t:'Precio fijo',p:'Precio conocido antes de reservar. TWINT, efectivo, tarjeta.'}
     ],
-    stories:{
-      enge:             {title:'Enge & Bürkliplatz', story:'Los raíles del tranvía en el Bürkliplatz han reventado más neumáticos que ningún bache. Lo sabemos — nos llaman allí más veces de las que podemos contar.'},
-      wollishofen:      {title:'Wollishofen', story:'Seebad, Brunau, sol de mañana sobre el lago. Territorio ciclista perfecto — hasta que el neumático se rinde. Vamos al lago para que puedas volver al lago.'},
-      leimbach:         {title:'Leimbach', story:'El Zúrich verde en su máximo esplendor. Senderos forestales, puentes sobre el Sihl, calma. A veces también: pinchazo en medio de la nada. Conocemos el camino.'},
-      wiedikon:         {title:'Wiedikon', story:'Goldbrunnenplatz, bares de barrio, adoquines con opiniones propias sobre tus neumáticos. Conocemos Wiedikon como el bolsillo.'},
-      aussersihl:       {title:'Aussersihl & Langstrasse', story:'La Langstrasse a medianoche, la Rote Fabrik un domingo — Aussersihl nunca duerme. Nosotros tampoco. ¿Urgencia de pinchazo? En 30 minutos.'},
-      industriequartier:{title:'Industriequartier', story:'Prime Tower, Viadukt, Schiffbau. El viejo Zúrich se encuentra con la escena startup. Y entre aparcabicis y cafeterías de especialidad: a veces un pinchazo. Nosotros nos encargamos.'},
-      schwamendingen:   {title:'Schwamendingen', story:'Schwamendingen tiene fama — injustamente. Adoramos este barrio. Calles amplias, buen acceso, y un mecánico que realmente aparece.'},
-      oerlikon:         {title:'Oerlikon', story:'MFO-Park, Hallenstadion, Max-Bill-Platz. El norte de Zúrich está en auge. No es de extrañar que cientos de bicis rueden aquí a diario. Y a veces también nosotros.'},
-      hoengg:           {title:'Höngg', story:'El pueblo vitícola en el corazón de la ciudad. Callejuelas empinadas, viñas, vistas. Se llega en bici — y cuando la transmisión protesta, venimos nosotros.'},
-      affoltern:        {title:'Affoltern', story:'Barrio norte tranquilo, mucho verde, rutas cortas al bosque. VELOV también va allí — y nuestro mecánico conoce el centro del pueblo.'},
-      seefeld:          {title:'Seefeld', story:'Seefeldstrasse, Ópera, Zürichhorn. La dirección más elegante de Zúrich. Claro que también venimos aquí — las bicis son democráticas.'},
-      witikon:          {title:'Witikon', story:'El barrio más alto de Zúrich. Lo que sube tiene que bajar — y lo que se rompe en el camino, lo reparamos nosotros.'},
-      hirslanden:       {title:'Hirslanden', story:'Gran ladera del Zürichberg, clínica, villas. Muchas e-bikes aquí — véase: desnivel. Servicio mecánico in situ. La batería se queda como está.'},
-      schlieren:        {title:'Schlieren', story:'Justo en la frontera de la ciudad, casi ya Zúrich. El Limmat apenas nos separa. Servicio el mismo día como en la ciudad — más CHF 20 de suplemento.'},
-      kilchberg:        {title:'Kilchberg', story:'Lindt & Sprüngli viene de aquí. Nosotros no — pero venimos igual. Olor a chocolate incluido, reparación de pinchazo también.'},
-      ruemlang:         {title:'Rümlang', story:'Entre Zúrich y el aeropuerto. Quien vive aquí conoce los aviones y las distancias cortas. Nosotros también conocemos el camino.'},
-      opfikon:          {title:'Opfikon & Glattpark', story:'Barrio nuevo, muchos commuters, mucho movimiento. Los carriles bici del Glattpark son geniales — hasta que cadena o neumático discrepan. Estamos cerca.'},
-      glattbrugg:       {title:'Glattbrugg', story:'Aparcabicis del Shoppi Tivoli, lanzaderas al aeropuerto, parques empresariales. VELOV también va al área metropolitana. Tiempo de respuesta ~65 min.'},
-      wallisellen:      {title:'Wallisellen', story:'Al este de Zúrich, bien comunicada. Se pedalea mucho aquí — y venimos cuando ya no funciona.'},
-      zollikon:         {title:'Zollikon', story:'Orilla del lago de Zúrich, villas, tranquilidad. Un lugar donde la bici es un estilo de vida. Y donde un buen mecánico viene cuando se necesita.'},
-      horgen:           {title:'Horgen', story:'En barco de vapor o en bici junto al lago — Horgen es preciosa. También vamos allí, danos ~75 min. Vale la pena.'},
-      thalwil:          {title:'Thalwil', story:'Término del Goldbahn, inicio del lago. Thalwil es el sur — tranquila, bonita, y VELOV también viene aquí.'}
-    },
-    faqs:[
-      {q:'¿Cubrís zonas fuera de la ciudad de Zúrich ?', a:'Sí — Schlieren, Kilchberg, Rümlang, Opfikon, Wallisellen, Zollikon, Horgen, Thalwil y más. Pequeño suplemento de CHF 20, todo lo demás igual.'},
-      {q:'¿Tenéis tienda o sede fija ?', a:'No — 100% móvil. Esa es nuestra ventaja: vamos a donde estés en Zúrich. Sin transporte, sin estrés de horarios.'},
-      {q:'¿Qué rapidez tenéis en la ciudad ?', a:'Generalmente menos de 45 minutos en los distritos 1–12. Para urgencias (pinchazo) a menudo incluso más rápido.'},
-      {q:'¿Cómo sé si mi zona está cubierta ?', a:'Haz clic en tu barrio arriba — ves inmediatamente tu tiempo de respuesta y un enlace de reserva WhatsApp directo.'},
-      {q:'¿Cuánto cuesta el desplazamiento ?', a:'Ciudad de Zúrich CHF 49 fijo. Área metropolitana CHF 49 + CHF 20 suplemento = CHF 69. Todo transparente antes de reservar.'}
-    ]
+    finalH2:'¿Listo para arreglar? Disponibles el mismo día.',
+    finalP:'Vamos a ti — todo Zúrich y alrededores.',
+    finalBtn:'→ Reservar por WhatsApp',
+    finalCallPrefix:'o llama:',
+    waGeneric:'Hola VELOV, necesito reparar mi bici en Zúrich. ¿Puedes ayudarme?'
   }
 };
 
-/* ===================================================================
-   CUSTOM ELEMENT
-=================================================================== */
-class VelovLocations extends HTMLElement {
+/* SEO config builder per language */
+function _velovLocBuildSeo(lang) {
+  const t = VELOV_LOC_I18N[lang] || VELOV_LOC_I18N.DE;
+  const cfg = {
+    id: 'locations_' + lang.toLowerCase(),
+    h1: t.seoH1,
+    intro: t.seoIntro,
+    sections: [
+      { h2: t.pickerTitle, body: t.pickerLead, h3items: VELOV_LOC_ZONES.slice(0, 12).map(z => ({ h3: z.names[lang] || z.names.DE, body: z.jokes[lang] || z.jokes.DE })) }
+    ],
+    contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch'
+  };
+  if (lang === 'DE') {
+    cfg.schema = [
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "@id": "https://www.velov.ch/#business",
+        "name": "VELOV — Mobile Velowerkstatt Zürich",
+        "url": "https://www.velov.ch",
+        "telephone": "+41762352126",
+        "email": "info@velov.ch",
+        "image": "https://www.velov.ch/og-image.jpg",
+        "priceRange": "CHF 99 - CHF 299",
+        "address": { "@type": "PostalAddress", "streetAddress": "Merkurstrasse 56", "addressLocality": "Zürich", "postalCode": "8032", "addressRegion": "ZH", "addressCountry": "CH" },
+        "geo": { "@type": "GeoCoordinates", "latitude": 47.3769, "longitude": 8.5417 },
+        "areaServed": VELOV_LOC_ZONES.map(z => ({ "@type": "Place", "name": z.names.DE })),
+        "openingHoursSpecification": [{ "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], "opens": "08:00", "closes": "20:00" }],
+        "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "500" },
+        "sameAs": ["https://g.page/r/Cde-mb4tOTU-EAE"]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.velov.ch" },
+          { "@type": "ListItem", "position": 2, "name": "Standorte", "item": "https://www.velov.ch/standorte" }
+        ]
+      }
+    ];
+  }
+  return cfg;
+}
 
-  constructor(){
+class VelovLocations extends HTMLElement {
+  static CONFIG = {
+    phone:        '+41762352126',
+    phoneDisplay: '+41 76 235 21 26',
+    whatsapp:     '41762352126',
+    email:        'velovzh@gmail.com'
+  };
+
+  constructor() {
     super();
-    this.state = { filter:'all', selected:null, query:'' };
-    this._lang = detectVlLang();
-    if(!VL_LANG[this._lang]) this._lang = 'de';
+    this.state = { filter: 'all', selected: null, query: '', factIdx: 0 };
   }
 
-  get L(){ return VL_LANG[this._lang]; }
-  get UI(){ return this.L.ui; }
+  detectLang() {
+    const supported = ['DE', 'EN', 'FR', 'IT', 'ES'];
+    const explicit = this.getAttribute('lang');
+    if (explicit) {
+      const up = explicit.toUpperCase().slice(0, 2);
+      if (supported.includes(up)) return up;
+    }
+    if (typeof window !== 'undefined' && window.__VELOV_LANG__) {
+      const w = String(window.__VELOV_LANG__).toUpperCase().slice(0, 2);
+      if (supported.includes(w)) return w;
+    }
+    if (typeof document !== 'undefined' && document.documentElement && document.documentElement.lang) {
+      const d = document.documentElement.lang.toUpperCase().slice(0, 2);
+      if (supported.includes(d)) return d;
+    }
+    return 'DE';
+  }
 
-  connectedCallback(){
-    /* ── WIX VISIBILITY FIX ── */
-    this.style.display    = 'block';
-    this.style.width      = '100%';
-    this.style.minHeight  = '200px';
-    this.style.overflow   = 'visible';
-    this.style.position   = 'relative';
-    this.style.background = '#F5F0EB';
-
-    try{ window.__velovSeoHelper && window.__velovSeoHelper.injectSeo(this, this.L.seo, this.UI.faqLabel, this.UI.contactLabel); }catch(e){}
-    try{ window.__velovTracker && window.__velovTracker.bind(this, this._lang); }catch(e){}
+  connectedCallback() {
+    this.lang = this.detectLang();
+    this.t = VELOV_LOC_I18N[this.lang] || VELOV_LOC_I18N.DE;
+    try { window.__velovSeoHelper && window.__velovSeoHelper.injectSeo(this, _velovLocBuildSeo(this.lang)); } catch(e) {}
+    try { window.__velovTracker && window.__velovTracker.bind(this); } catch(e) {}
 
     this.injectStyles();
     this.render();
     this.bindEvents();
-
-    this._fixHeight();
-    var me = this;
-    setTimeout(function(){ me._fixHeight(); }, 100);
-    setTimeout(function(){ me._fixHeight(); }, 600);
-    setTimeout(function(){ me._fixHeight(); }, 1500);
-    if(typeof ResizeObserver !== 'undefined'){
-      try{ new ResizeObserver(function(){ me._fixHeight(); }).observe(me); }catch(e){}
-    }
+    this.startFactRotator();
   }
 
-  _fixHeight(){
-    try{
-      var h = this.scrollHeight || this.offsetHeight;
-      if(h > 100){ this.style.height = h+'px'; this.style.minHeight = h+'px'; }
-      else { this.style.minHeight = '4000px'; }
-    }catch(e){}
+  disconnectedCallback() {
+    if (this._factTimer) clearInterval(this._factTimer);
   }
 
-  disconnectedCallback(){}
+  injectStyles() {
+    if (document.getElementById('velov-locations-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'velov-locations-styles';
+    style.textContent = `
+      velov-locations { display: block; width: 100%; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; color: #2D2B3D; box-sizing: border-box; }
+      velov-locations *, velov-locations *::before, velov-locations *::after { box-sizing: border-box; }
+      .vl-wrap { max-width: 1200px; margin: 0 auto; padding: 48px 24px; background: #F5F0EB; }
+      .vl-hero { background: linear-gradient(135deg, #7B68EE 0%, #9B88FF 100%); color: #fff; padding: 56px 32px; border-radius: 24px; text-align: center; margin-bottom: 24px; position: relative; overflow: hidden; }
+      .vl-hero::before { content:''; position:absolute; top:-30%; right:-10%; width:400px; height:400px; background: radial-gradient(circle, rgba(255,255,255,.1), transparent 65%); filter: blur(40px); }
+      .vl-hero h1, .vl-hero p, .vl-hero .sub { position: relative; z-index: 2; }
+      .vl-hero h1 { font-size: 2.4rem; margin: 0 0 12px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.15; }
+      .vl-hero p { font-size: 1.1rem; opacity: .95; max-width: 720px; margin: 0 auto 8px; }
+      .vl-hero .sub { font-size: .9rem; opacity: .8; margin-top: 12px; }
 
-  injectStyles(){
-    if(document.getElementById('velov-locations-styles')) return;
-    if(!document.getElementById('velov-loc-font')){
-      try{
-        var lnk=document.createElement('link');
-        lnk.id='velov-loc-font'; lnk.rel='stylesheet';
-        lnk.href='https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap';
-        document.head.appendChild(lnk);
-      }catch(e){}
-    }
-    var s=document.createElement('style');
-    s.id='velov-locations-styles';
-    s.textContent = `
-      .vl-wrap { display:block; width:100%; min-height:200px; background:#F5F0EB; font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; color:#2D2B3D; line-height:1.6; -webkit-font-smoothing:antialiased; }
-      .vl-wrap *, .vl-wrap *::before, .vl-wrap *::after { margin:0; padding:0; box-sizing:border-box; }
-      .vl-wrap a { text-decoration:none; }
+      .vl-fact { background: #fff; border-radius: 16px; padding: 18px 24px; margin-bottom: 32px; display: flex; align-items: flex-start; gap: 14px; box-shadow: 0 4px 14px rgba(45,43,61,.06); border-left: 4px solid #E8573A; transition: opacity .3s; }
+      .vl-fact .vl-fact-label { background: #E8573A; color: #fff; padding: 4px 10px; border-radius: 999px; font-size: .75rem; font-weight: 700; flex-shrink: 0; white-space: nowrap; }
+      .vl-fact .vl-fact-text { color: #2D2B3D; font-size: .95rem; line-height: 1.5; flex: 1; }
+      .vl-fact.fading { opacity: 0; }
 
-      .vl-inner { max-width:1200px; margin:0 auto; padding:0 24px; }
-      .vl-section { padding:80px 0; }
+      .vl-picker { background: #fff; border-radius: 20px; padding: 28px; margin-bottom: 32px; box-shadow: 0 4px 20px rgba(45,43,61,.08); }
+      .vl-picker h2 { font-size: 1.4rem; margin: 0 0 8px; color: #2D2B3D; font-weight: 700; line-height: 1.3; }
+      .vl-picker .lead { color: #666; margin-bottom: 18px; font-size: .95rem; }
+      .vl-search { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+      .vl-search input { flex: 1; min-width: 220px; padding: 14px 16px; border: 2px solid #E8E3D9; border-radius: 12px; font-size: 1rem; font-family: inherit; outline: none; transition: border-color .2s; }
+      .vl-search input:focus { border-color: #7B68EE; }
+      .vl-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+      .vl-chip { padding: 8px 16px; border-radius: 999px; background: #F5F0EB; border: 2px solid transparent; color: #2D2B3D; font-size: .9rem; cursor: pointer; font-weight: 600; transition: all .2s; font-family: inherit; }
+      .vl-chip:hover { background: #E8E3D9; }
+      .vl-chip.active { background: #7B68EE; color: #fff; }
 
-      /* HERO */
-      .vl-hero { background:linear-gradient(135deg,#7B68EE 0%,#9B88FF 60%,#B9AEFF 100%); color:#fff; padding:96px 0 120px; text-align:center; position:relative; overflow:hidden; }
-      .vl-hero::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:60px; background:#F5F0EB; border-radius:60% 60% 0 0 / 100% 100% 0 0; }
-      .vl-hero::before { content:''; position:absolute; top:-80px; right:-80px; width:400px; height:400px; background:radial-gradient(circle,rgba(232,87,58,.25),transparent 65%); filter:blur(40px); }
-      .vl-hero-inner { position:relative; z-index:2; }
-      .vl-hero-badge { display:inline-block; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); padding:7px 18px; border-radius:50px; font-size:13px; font-weight:600; margin-bottom:22px; letter-spacing:.8px; }
-      .vl-h1 { font-size:clamp(32px,5vw,54px); font-weight:800; line-height:1.05; margin:0 auto 20px; max-width:860px; letter-spacing:-.025em; color:#fff; }
-      .vl-hero-sub { font-size:18px; opacity:.9; max-width:680px; margin:0 auto 36px; line-height:1.55; color:#fff; }
-      .vl-stats { display:flex; justify-content:center; gap:32px; flex-wrap:wrap; margin-top:36px; }
-      .vl-stat { text-align:center; }
-      .vl-stat-num { font-size:28px; font-weight:800; color:#fff; display:block; line-height:1; }
-      .vl-stat-lbl { font-size:12px; opacity:.8; margin-top:4px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#fff; }
+      .vl-zones { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+      .vl-zone { background: #F5F0EB; border-radius: 12px; padding: 14px 16px; cursor: pointer; border: 2px solid transparent; transition: all .2s; text-align: left; font-family: inherit; }
+      .vl-zone:hover { background: #fff; border-color: #7B68EE; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(123,104,238,.15); }
+      .vl-zone.selected { background: #fff; border-color: #E8573A; box-shadow: 0 4px 16px rgba(232,87,58,.2); }
+      .vl-zone .vl-zname { font-weight: 700; color: #2D2B3D; font-size: .98rem; margin-bottom: 4px; }
+      .vl-zone .vl-zeta { color: #E8573A; font-size: .85rem; font-weight: 600; }
+      .vl-zone.umland .vl-zname::before { content: '🏘️ '; }
+      .vl-zone.city .vl-zname::before { content: '🏢 '; }
 
-      /* PICKER */
-      .vl-picker { background:#fff; border-radius:24px; padding:40px; box-shadow:0 16px 40px rgba(45,43,61,.08); }
-      .vl-picker-title { font-size:22px; font-weight:800; color:#2D2B3D; margin-bottom:8px; }
-      .vl-picker-lead { color:#6B6880; margin-bottom:24px; font-size:16px; }
-      .vl-search { margin-bottom:18px; }
-      .vl-search input { width:100%; padding:14px 18px; border:2px solid #E8E4DF; border-radius:14px; font-size:16px; font-family:inherit; outline:none; transition:border-color .2s; color:#2D2B3D; background:#fff; }
-      .vl-search input:focus { border-color:#7B68EE; }
-      .vl-filter { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
-      .vl-chip { padding:9px 18px; border-radius:50px; background:#F5F0EB; border:2px solid transparent; color:#2D2B3D; font-size:14px; cursor:pointer; font-weight:600; transition:all .18s; font-family:inherit; }
-      .vl-chip:hover { background:#E8E3D9; }
-      .vl-chip.active { background:#7B68EE; color:#fff; border-color:#7B68EE; }
-      .vl-zones { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
-      .vl-zone { background:#F5F0EB; border-radius:14px; padding:14px 16px; cursor:pointer; border:2px solid transparent; transition:all .2s; text-align:left; font-family:inherit; width:100%; }
-      .vl-zone:hover { background:#fff; border-color:#7B68EE; transform:translateY(-2px); box-shadow:0 6px 16px rgba(123,104,238,.12); }
-      .vl-zone.selected { background:#fff; border-color:#E8573A; box-shadow:0 6px 16px rgba(232,87,58,.15); }
-      .vl-zname { font-weight:700; color:#2D2B3D; font-size:15px; margin-bottom:4px; }
-      .vl-zeta { color:#E8573A; font-size:13px; font-weight:600; }
+      .vl-result { margin-top: 24px; padding: 28px; background: linear-gradient(135deg, #2D2B3D 0%, #3D3B4D 100%); border-radius: 16px; color: #fff; display: none; }
+      .vl-result.show { display: block; }
+      .vl-result h3 { margin: 0 0 8px; font-size: 1.4rem; font-weight: 700; }
+      .vl-result .vl-eta-big { font-size: 2.2rem; font-weight: 800; color: #E8573A; margin: 8px 0; line-height: 1; }
+      .vl-result .vl-joke { font-style: italic; opacity: .95; margin: 12px 0 16px; font-size: 1.02rem; line-height: 1.5; padding-left: 12px; border-left: 3px solid #E8573A; }
+      .vl-result .vl-cta { display: inline-block; padding: 14px 28px; background: #E8573A; color: #fff; border-radius: 999px; text-decoration: none; font-weight: 700; transition: transform .2s; }
+      .vl-result .vl-cta:hover { transform: scale(1.04); }
 
-      /* RESULT */
-      .vl-result { margin-top:28px; padding:32px; background:linear-gradient(135deg,#2D2B3D,#3D3B4D); border-radius:20px; color:#fff; display:none; }
-      .vl-result.show { display:block; }
-      .vl-result-top { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap; margin-bottom:16px; }
-      .vl-result h3 { font-size:22px; font-weight:800; margin:0 0 4px; }
-      .vl-result .vl-landmark { font-size:13px; opacity:.7; }
-      .vl-eta-big { font-size:44px; font-weight:800; color:#E8573A; line-height:1; }
-      .vl-eta-unit { font-size:15px; opacity:.8; margin-top:4px; }
-      .vl-result-story { background:rgba(255,255,255,.08); border-radius:14px; padding:18px; margin:16px 0; font-size:15px; line-height:1.6; font-style:italic; opacity:.95; border-left:4px solid #7B68EE; }
-      .vl-result-cta { display:inline-flex; align-items:center; gap:10px; background:#25D366; color:#fff; padding:14px 28px; border-radius:50px; font-weight:700; font-size:15px; transition:all .2s; }
-      .vl-result-cta:hover { background:#1ebe5b; transform:translateY(-2px); }
+      .vl-services { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+      .vl-service { background: #fff; padding: 24px; border-radius: 16px; text-align: center; box-shadow: 0 4px 16px rgba(45,43,61,.06); border-top: 4px solid #7B68EE; }
+      .vl-service .emoji { font-size: 2rem; }
+      .vl-service h4 { margin: 10px 0 6px; color: #2D2B3D; font-size: 1.05rem; font-weight: 700; }
+      .vl-service .price { font-size: 1.5rem; font-weight: 800; color: #E8573A; margin-top: 8px; }
+      .vl-service .time { color: #999; font-size: .85rem; margin-top: 4px; }
 
-      /* STORIES */
-      .vl-stories-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; margin-top:40px; }
-      .vl-story-card { background:#fff; border-radius:18px; padding:28px; border:1px solid #E8E4DF; transition:all .22s; cursor:default; }
-      .vl-story-card:hover { transform:translateY(-4px); box-shadow:0 12px 28px rgba(123,104,238,.1); border-color:#7B68EE; }
-      .vl-story-title { font-size:16px; font-weight:800; color:#2D2B3D; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-      .vl-story-title::before { content:'📍'; font-size:14px; }
-      .vl-story-text { font-size:14px; color:#6B6880; line-height:1.65; }
+      .vl-bene { background: #fff; border-radius: 20px; padding: 32px; margin-bottom: 32px; box-shadow: 0 4px 20px rgba(45,43,61,.06); }
+      .vl-bene h2 { color: #7B68EE; font-size: 1.5rem; margin: 0 0 20px; font-weight: 700; }
+      .vl-bene-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+      .vl-bene-item .emoji { font-size: 1.8rem; }
+      .vl-bene-item h4 { color: #2D2B3D; margin: 8px 0 4px; font-size: 1.05rem; font-weight: 700; }
+      .vl-bene-item p { color: #666; font-size: .95rem; margin: 0; }
 
-      /* SERVICES */
-      .vl-svc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:32px; }
-      .vl-svc { background:#fff; padding:28px 24px; border-radius:18px; text-align:center; border-top:4px solid #7B68EE; box-shadow:0 4px 16px rgba(45,43,61,.06); }
-      .vl-svc-emoji { font-size:2.2rem; margin-bottom:10px; }
-      .vl-svc h4 { font-size:16px; font-weight:700; color:#2D2B3D; margin-bottom:8px; }
-      .vl-svc-price { font-size:24px; font-weight:800; color:#E8573A; margin-bottom:4px; }
-      .vl-svc-time { color:#999; font-size:13px; }
+      .vl-finalcta { background: linear-gradient(135deg, #E8573A 0%, #FF7A5C 100%); color: #fff; padding: 44px 32px; border-radius: 24px; text-align: center; margin-bottom: 24px; }
+      .vl-finalcta h2 { font-size: 1.7rem; margin: 0 0 12px; font-weight: 800; }
+      .vl-finalcta p { font-size: 1.05rem; opacity: .95; margin: 0 0 22px; }
+      .vl-finalcta .btn { display: inline-block; background: #fff; color: #E8573A; padding: 16px 32px; border-radius: 999px; font-weight: 800; text-decoration: none; font-size: 1.02rem; transition: transform .2s; }
+      .vl-finalcta .btn:hover { transform: scale(1.05); }
+      .vl-finalcta .phone { display: block; margin-top: 16px; color: #fff; opacity: .9; font-size: .92rem; }
+      .vl-finalcta .phone a { color: #fff; font-weight: 700; text-decoration: underline; }
 
-      /* BENEFITS */
-      .vl-bene-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin-top:32px; }
-      .vl-bene-item { background:#fff; border-radius:16px; padding:28px 24px; text-align:center; box-shadow:0 4px 16px rgba(45,43,61,.06); }
-      .vl-bene-emoji { font-size:2rem; margin-bottom:10px; }
-      .vl-bene-item h4 { font-size:16px; font-weight:700; color:#2D2B3D; margin-bottom:6px; }
-      .vl-bene-item p { font-size:14px; color:#6B6880; line-height:1.6; }
+      .vl-h2-section { color: #2D2B3D; font-size: 1.4rem; margin: 0 0 16px; font-weight: 700; }
 
-      /* FAQ */
-      .vl-faq-list { margin-top:36px; max-width:760px; margin-left:auto; margin-right:auto; }
-      .vl-faq { background:#fff; border-radius:14px; margin-bottom:10px; border:1px solid #E8E4DF; overflow:hidden; }
-      .vl-faq.open { border-color:#7B68EE; box-shadow:0 8px 24px rgba(123,104,238,.08); }
-      .vl-faq-q { width:100%; display:flex; justify-content:space-between; align-items:center; padding:18px 22px; background:none; border:none; font-family:inherit; font-size:15px; font-weight:700; color:#2D2B3D; text-align:left; cursor:pointer; gap:12px; }
-      .vl-faq-ico { width:28px; height:28px; border-radius:50%; background:#F5F0EB; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; color:#7B68EE; font-weight:700; transition:all .22s; }
-      .vl-faq.open .vl-faq-ico { background:#7B68EE; color:#fff; transform:rotate(45deg); }
-      .vl-faq-a { max-height:0; overflow:hidden; transition:max-height .3s; padding:0 22px; }
-      .vl-faq.open .vl-faq-a { max-height:300px; }
-      .vl-faq-ai { padding-bottom:18px; font-size:14px; color:#6B6880; line-height:1.65; }
-
-      /* FINAL CTA */
-      .vl-finalcta { background:linear-gradient(135deg,#E8573A,#FF7A5C); color:#fff; padding:96px 0; text-align:center; }
-      .vl-finalcta h2 { font-size:clamp(24px,3.5vw,38px); font-weight:800; margin-bottom:14px; }
-      .vl-finalcta p { font-size:17px; opacity:.95; margin-bottom:28px; max-width:540px; margin-left:auto; margin-right:auto; }
-      .vl-finalcta-btn { display:inline-block; background:#fff; color:#E8573A; padding:16px 36px; border-radius:50px; font-weight:800; font-size:17px; transition:all .2s; }
-      .vl-finalcta-btn:hover { transform:scale(1.05); box-shadow:0 8px 24px rgba(0,0,0,.2); }
-      .vl-phone { display:block; margin-top:18px; font-size:14px; opacity:.9; }
-      .vl-phone a { color:#fff; font-weight:700; text-decoration:underline; }
-
-      @media(max-width:768px){
-        .vl-section { padding:56px 0; }
-        .vl-hero { padding:64px 0 90px; }
-        .vl-picker { padding:24px 18px; }
-        .vl-stats { gap:20px; }
-        .vl-result-top { flex-direction:column; }
-        .vl-stories-grid { grid-template-columns:1fr; }
+      @media (max-width: 640px) {
+        .vl-wrap { padding: 24px 16px; }
+        .vl-hero { padding: 36px 18px; border-radius: 16px; }
+        .vl-hero h1 { font-size: 1.7rem; }
+        .vl-zones { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+        .vl-fact { flex-direction: column; gap: 8px; }
       }
     `;
-    document.head.appendChild(s);
+    document.head.appendChild(style);
   }
 
-  /* ── HTML builders — no nested backticks ── */
-  _buildStats(){
-    return this.UI.heroStats.map(function(s){
-      return '<div class="vl-stat">'
-        + '<span class="vl-stat-num">'+s.num+'</span>'
-        + '<span class="vl-stat-lbl">'+s.label+'</span>'
-        + '</div>';
-    }).join('');
+  render() {
+    const C = VelovLocations.CONFIG;
+    const T = this.t;
+
+    const zonesHtml = VELOV_LOC_ZONES.map(z => `
+      <button class="vl-zone ${z.type}" data-slug="${z.slug}" data-type="${z.type}" data-name="${(z.names[this.lang] || z.names.DE).replace(/"/g, '&quot;')}">
+        <div class="vl-zname">${z.names[this.lang] || z.names.DE}</div>
+        <div class="vl-zeta">~${z.eta} ${this.lang === 'DE' ? 'Min' : 'min'}</div>
+      </button>
+    `).join('');
+
+    const cityCount = VELOV_LOC_ZONES.filter(z => z.type === 'city').length;
+    const umlandCount = VELOV_LOC_ZONES.filter(z => z.type === 'umland').length;
+
+    const servicesHtml = T.services.map(s => `
+      <div class="vl-service">
+        <div class="emoji">${s.emoji}</div>
+        <h4>${s.name}</h4>
+        <div class="price">${this.lang === 'DE' || this.lang === 'IT' ? 'ab' : this.lang === 'EN' ? 'from' : this.lang === 'FR' ? 'dès' : 'desde'} ${s.price} CHF</div>
+        <div class="time">⏱️ ${s.time}</div>
+      </div>
+    `).join('');
+
+    const beneHtml = T.benefits.map(b => `
+      <div class="vl-bene-item">
+        <div class="emoji">${b.emoji}</div>
+        <h4>${b.t}</h4>
+        <p>${b.p}</p>
+      </div>
+    `).join('');
+
+    this.innerHTML = `
+      <div class="vl-wrap">
+        <div class="vl-hero">
+          <h1>${T.heroH1}</h1>
+          <p>${T.heroP}</p>
+          <div class="sub">${T.heroSub}</div>
+        </div>
+
+        <div class="vl-fact" id="vl-fact">
+          <span class="vl-fact-label">${T.didYouKnowLabel}</span>
+          <span class="vl-fact-text" id="vl-fact-text">${T.didYouKnow[0]}</span>
+        </div>
+
+        <section class="vl-picker">
+          <h2>${T.pickerTitle}</h2>
+          <p class="lead">${T.pickerLead}</p>
+          <div class="vl-search">
+            <input type="text" id="vl-q" placeholder="${T.searchPh}" autocomplete="off" />
+          </div>
+          <div class="vl-filter">
+            <button class="vl-chip active" data-filter="all">${T.chipAll} (${VELOV_LOC_ZONES.length})</button>
+            <button class="vl-chip" data-filter="city">${T.chipCity} (${cityCount})</button>
+            <button class="vl-chip" data-filter="umland">${T.chipUmland} (${umlandCount})</button>
+          </div>
+          <div class="vl-zones" id="vl-zones">${zonesHtml}</div>
+
+          <div class="vl-result" id="vl-result">
+            <h3 id="vl-rname">—</h3>
+            <p>${T.resultLead}</p>
+            <div class="vl-eta-big" id="vl-reta">—</div>
+            <div class="vl-joke" id="vl-rjoke">—</div>
+            <a id="vl-rcta" class="vl-cta" href="#" target="_blank" rel="noopener">${T.ctaHere} <span id="vl-rname2">—</span> ${T.ctaBookSuffix}</a>
+          </div>
+        </section>
+
+        <h2 class="vl-h2-section">${T.servicesH2}</h2>
+        <div class="vl-services">${servicesHtml}</div>
+
+        <section class="vl-bene">
+          <h2>${T.beneH2}</h2>
+          <div class="vl-bene-grid">${beneHtml}</div>
+        </section>
+
+        <section class="vl-finalcta">
+          <h2>${T.finalH2}</h2>
+          <p>${T.finalP}</p>
+          <a class="btn" href="https://wa.me/${C.whatsapp}?text=${encodeURIComponent(T.waGeneric)}" target="_blank" rel="noopener">${T.finalBtn}</a>
+          <span class="phone">${T.finalCallPrefix} <a href="tel:${C.phone}">${C.phoneDisplay}</a></span>
+        </section>
+      </div>
+    `;
   }
 
-  _buildZones(){
-    var me = this;
-    var UI = this.UI;
-    return VL_ZONES.map(function(z){
-      var badge = z.type === 'city' ? UI.cityBadge : UI.umlandBadge;
-      return '<button class="vl-zone" data-slug="'+z.slug+'" data-type="'+z.type+'" data-name="'+z.name+'">'
-        + '<div class="vl-zname">'+badge+' '+z.name+'</div>'
-        + '<div class="vl-zeta">~'+z.eta+' '+UI.minuteUnit+'</div>'
-        + '</button>';
-    }).join('');
-  }
-
-  _buildStoriesGrid(){
-    var L = this.L;
-    /* Show a curated selection of 6 stories */
-    var picks = ['aussersihl','seefeld','oerlikon','hoengg','kilchberg','wiedikon'];
-    return picks.map(function(key){
-      var s = L.stories[key];
-      if(!s) return '';
-      return '<div class="vl-story-card">'
-        + '<div class="vl-story-title">'+s.title+'</div>'
-        + '<div class="vl-story-text">'+s.story+'</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  _buildServices(){
-    return this.L.services.map(function(s){
-      return '<div class="vl-svc">'
-        + '<div class="vl-svc-emoji">'+s.emoji+'</div>'
-        + '<h4>'+s.name+'</h4>'
-        + '<div class="vl-svc-price">ab CHF '+s.price+'</div>'
-        + '<div class="vl-svc-time">⏱️ '+s.time+'</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  _buildBenefits(){
-    return this.L.benefits.map(function(b){
-      return '<div class="vl-bene-item">'
-        + '<div class="vl-bene-emoji">'+b.emoji+'</div>'
-        + '<h4>'+b.title+'</h4>'
-        + '<p>'+b.text+'</p>'
-        + '</div>';
-    }).join('');
-  }
-
-  _buildFaqs(){
-    return this.L.faqs.map(function(f, i){
-      return '<div class="vl-faq" data-i="'+i+'">'
-        + '<button class="vl-faq-q" aria-expanded="false">'
-        + '<span>'+f.q+'</span>'
-        + '<span class="vl-faq-ico">+</span>'
-        + '</button>'
-        + '<div class="vl-faq-a"><div class="vl-faq-ai">'+f.a+'</div></div>'
-        + '</div>';
-    }).join('');
-  }
-
-  _countZones(type){
-    if(type === 'all') return VL_ZONES.length;
-    return VL_ZONES.filter(function(z){ return z.type === type; }).length;
-  }
-
-  render(){
-    var UI = this.UI;
-    var L = this.L;
-    var C = VL_CONTACT;
-
-    this.innerHTML = '<div class="vl-wrap">'
-
-      /* HERO */
-      + '<div class="vl-hero"><div class="vl-inner vl-hero-inner">'
-      + '<div class="vl-hero-badge">'+UI.heroBadge+'</div>'
-      + '<h1 class="vl-h1">'+UI.heroH1+'</h1>'
-      + '<p class="vl-hero-sub">'+UI.heroSub+'</p>'
-      + '<div class="vl-stats">'+this._buildStats()+'</div>'
-      + '</div></div>'
-
-      /* PICKER */
-      + '<div class="vl-section" style="background:#fff"><div class="vl-inner">'
-      + '<div class="vl-picker">'
-      + '<div class="vl-picker-title">'+UI.pickerTitle+'</div>'
-      + '<div class="vl-picker-lead">'+UI.pickerLead+'</div>'
-      + '<div class="vl-search"><input type="text" id="vl-q" placeholder="'+UI.searchPlaceholder+'" autocomplete="off"/></div>'
-      + '<div class="vl-filter">'
-      + '<button class="vl-chip active" data-filter="all">'+UI.filterAll+' ('+this._countZones('all')+')</button>'
-      + '<button class="vl-chip" data-filter="city">'+UI.filterCity+' ('+this._countZones('city')+')</button>'
-      + '<button class="vl-chip" data-filter="umland">'+UI.filterUmland+' ('+this._countZones('umland')+')</button>'
-      + '</div>'
-      + '<div class="vl-zones" id="vl-zones">'+this._buildZones()+'</div>'
-      + '<div class="vl-result" id="vl-result">'
-      + '<div class="vl-result-top">'
-      + '<div><h3 id="vl-rname">—</h3><div class="vl-landmark" id="vl-rlm">—</div></div>'
-      + '<div><div class="vl-eta-big" id="vl-reta">—</div><div class="vl-eta-unit">'+UI.etaLabel+'</div></div>'
-      + '</div>'
-      + '<div class="vl-result-story" id="vl-rstory"></div>'
-      + '<a id="vl-rcta" class="vl-result-cta" href="#" target="_blank" rel="noopener">💬 <span id="vl-rbtn">—</span></a>'
-      + '</div>'
-      + '</div>'
-      + '</div></div>'
-
-      /* ZÜRICH STORIES */
-      + '<div class="vl-section" style="background:#F5F0EB"><div class="vl-inner">'
-      + '<div style="text-align:center">'
-      + '<div style="display:inline-block;font-size:12px;font-weight:700;color:#7B68EE;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:12px">'+UI.storiesTitle+'</div>'
-      + '<h2 style="font-size:clamp(24px,3vw,36px);font-weight:800;color:#2D2B3D;margin-bottom:14px;letter-spacing:-.02em">'+UI.storiesLead+'</h2>'
-      + '</div>'
-      + '<div class="vl-stories-grid">'+this._buildStoriesGrid()+'</div>'
-      + '</div></div>'
-
-      /* SERVICES */
-      + '<div class="vl-section" style="background:#fff"><div class="vl-inner">'
-      + '<div style="text-align:center">'
-      + '<h2 style="font-size:clamp(24px,3vw,36px);font-weight:800;color:#2D2B3D;margin-bottom:14px">'+UI.servicesTitle+'</h2>'
-      + '</div>'
-      + '<div class="vl-svc-grid">'+this._buildServices()+'</div>'
-      + '</div></div>'
-
-      /* BENEFITS */
-      + '<div class="vl-section" style="background:#F5F0EB"><div class="vl-inner">'
-      + '<div style="text-align:center">'
-      + '<h2 style="font-size:clamp(24px,3vw,36px);font-weight:800;color:#2D2B3D;margin-bottom:14px">'+UI.benefitsTitle+'</h2>'
-      + '</div>'
-      + '<div class="vl-bene-grid">'+this._buildBenefits()+'</div>'
-      + '</div></div>'
-
-      /* FAQ */
-      + '<div class="vl-section" style="background:#fff"><div class="vl-inner">'
-      + '<div style="text-align:center">'
-      + '<div style="display:inline-block;font-size:12px;font-weight:700;color:#7B68EE;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:12px">FAQ</div>'
-      + '<h2 style="font-size:clamp(24px,3vw,36px);font-weight:800;color:#2D2B3D;margin-bottom:14px">'+UI.faqLabel+'</h2>'
-      + '</div>'
-      + '<div class="vl-faq-list">'+this._buildFaqs()+'</div>'
-      + '</div></div>'
-
-      /* FINAL CTA */
-      + '<div class="vl-finalcta"><div class="vl-inner">'
-      + '<h2>'+UI.ctaTitle+'</h2>'
-      + '<p>'+UI.ctaBody+'</p>'
-      + '<a class="vl-finalcta-btn" href="https://wa.me/'+C.waNumber+'?text='+encodeURIComponent(UI.waMainMsg)+'" target="_blank" rel="noopener">'+UI.ctaBtn+'</a>'
-      + '<span class="vl-phone">'+UI.orCall+' <a href="tel:'+C.phone+'">'+C.phoneDisplay+'</a></span>'
-      + '</div></div>'
-
-      + '</div>'; /* end .vl-wrap */
-  }
-
-  bindEvents(){
-    var me = this;
-
-    /* Filter chips */
-    this.querySelectorAll('.vl-chip').forEach(function(chip){
-      chip.addEventListener('click', function(){
-        me.state.filter = chip.dataset.filter;
-        me.querySelectorAll('.vl-chip').forEach(function(c){ c.classList.toggle('active', c === chip); });
-        me.applyFilter();
+  bindEvents() {
+    this.querySelectorAll('.vl-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        this.state.filter = chip.dataset.filter;
+        this.querySelectorAll('.vl-chip').forEach(c => c.classList.toggle('active', c === chip));
+        this.applyFilter();
       });
     });
 
-    /* Zone clicks */
-    this.querySelectorAll('.vl-zone').forEach(function(zone){
-      zone.addEventListener('click', function(){ me.selectZone(zone.dataset.slug); });
+    this.querySelectorAll('.vl-zone').forEach(zone => {
+      zone.addEventListener('click', () => this.selectZone(zone.dataset.slug));
     });
 
-    /* Search */
-    var q = this.querySelector('#vl-q');
-    if(q){
-      q.addEventListener('input', function(e){
-        me.state.query = e.target.value.toLowerCase().trim();
-        me.applyFilter();
-      });
-    }
-
-    /* FAQ */
-    this.querySelectorAll('.vl-faq').forEach(function(item){
-      item.querySelector('.vl-faq-q').addEventListener('click', function(){
-        var wasOpen = item.classList.contains('open');
-        me.querySelectorAll('.vl-faq').forEach(function(x){
-          x.classList.remove('open');
-          x.querySelector('.vl-faq-q').setAttribute('aria-expanded','false');
-        });
-        if(!wasOpen){
-          item.classList.add('open');
-          item.querySelector('.vl-faq-q').setAttribute('aria-expanded','true');
-        }
-      });
+    const q = this.querySelector('#vl-q');
+    if (q) q.addEventListener('input', e => {
+      this.state.query = e.target.value.toLowerCase().trim();
+      this.applyFilter();
     });
   }
 
-  applyFilter(){
-    var filter = this.state.filter;
-    var query = this.state.query;
-    this.querySelectorAll('.vl-zone').forEach(function(zone){
-      var typeOk = filter === 'all' || zone.dataset.type === filter;
-      var nameOk = !query || zone.dataset.name.toLowerCase().indexOf(query) > -1;
+  applyFilter() {
+    const { filter, query } = this.state;
+    this.querySelectorAll('.vl-zone').forEach(zone => {
+      const typeOk = filter === 'all' || zone.dataset.type === filter;
+      const nameOk = !query || zone.dataset.name.toLowerCase().includes(query);
       zone.style.display = (typeOk && nameOk) ? '' : 'none';
     });
   }
 
-  selectZone(slug){
-    var me = this;
-    var UI = this.UI;
-    var L = this.L;
-    var C = VL_CONTACT;
-
-    var z = VL_ZONES.find(function(x){ return x.slug === slug; });
-    if(!z) return;
+  selectZone(slug) {
+    const C = VelovLocations.CONFIG;
+    const T = this.t;
+    const z = VELOV_LOC_ZONES.find(x => x.slug === slug);
+    if (!z) return;
     this.state.selected = slug;
+    this.querySelectorAll('.vl-zone').forEach(el => el.classList.toggle('selected', el.dataset.slug === slug));
 
-    this.querySelectorAll('.vl-zone').forEach(function(el){
-      el.classList.toggle('selected', el.dataset.slug === slug);
-    });
+    const panel = this.querySelector('#vl-result');
+    const name = z.names[this.lang] || z.names.DE;
+    const joke = z.jokes[this.lang] || z.jokes.DE;
 
-    var story = L.stories[z.storyKey] || {title:z.name, story:''};
-    var waMsg = UI.waZoneMsg(z.name);
+    this.querySelector('#vl-rname').textContent = name;
+    this.querySelector('#vl-rname2').textContent = name;
+    this.querySelector('#vl-reta').textContent = `~${z.eta} ${T.resultMins}`;
+    this.querySelector('#vl-rjoke').textContent = joke;
+    this.querySelector('#vl-rcta').href = `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(T.waMsgFn(name))}`;
 
-    var rname  = this.querySelector('#vl-rname');
-    var rlm    = this.querySelector('#vl-rlm');
-    var reta   = this.querySelector('#vl-reta');
-    var rstory = this.querySelector('#vl-rstory');
-    var rbtn   = this.querySelector('#vl-rbtn');
-    var rcta   = this.querySelector('#vl-rcta');
-    var panel  = this.querySelector('#vl-result');
+    panel.classList.add('show');
+    try { if (panel.scrollIntoView) panel.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e) {}
+  }
 
-    if(rname)  rname.textContent  = z.name;
-    if(rlm)    rlm.textContent    = '📍 '+z.landmark;
-    if(reta)   reta.textContent   = '~'+z.eta;
-    if(rstory) rstory.textContent = story.story;
-    if(rbtn)   rbtn.textContent   = UI.resultBookBtn(z.name);
-    if(rcta)   rcta.setAttribute('href', 'https://wa.me/'+C.waNumber+'?text='+encodeURIComponent(waMsg));
-    if(panel){
-      panel.classList.add('show');
-      try{ panel.scrollIntoView({behavior:'smooth', block:'center'}); }catch(e){}
-    }
+  startFactRotator() {
+    if (this._factTimer) clearInterval(this._factTimer);
+    const facts = this.t.didYouKnow;
+    if (!facts || facts.length < 2) return;
+    this._factTimer = setInterval(() => {
+      const el = this.querySelector('#vl-fact');
+      const txt = this.querySelector('#vl-fact-text');
+      if (!el || !txt) return;
+      el.classList.add('fading');
+      setTimeout(() => {
+        this.state.factIdx = (this.state.factIdx + 1) % facts.length;
+        txt.textContent = facts[this.state.factIdx];
+        el.classList.remove('fading');
+      }, 300);
+    }, 7000);
   }
 }
 
-if(!customElements.get('velov-locations')){
+if (!customElements.get('velov-locations')) {
   customElements.define('velov-locations', VelovLocations);
 }
