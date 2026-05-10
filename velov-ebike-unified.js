@@ -102,12 +102,15 @@ const VELOV_LANG = {
   de: {
     seo: {
       id: 'ebike-de',
-      h1: 'E-Bike Service Zürich – mobile Wartung für alle Marken',
-      intro: 'Mobiler E-Bike Service in Zürich für alle Marken: Bosch, Shimano, Yamaha. Mechanische Wartung vor Ort.',
-      sections: [{ h2: 'E-Bike Service in Zürich', body: 'Wir warten alle Marken mechanisch direkt bei dir.' }],
-      faqs: [{ q: 'Welche Marken?', a: 'Alle mechanisch: Bosch, Shimano, etc.' }],
+      h1: 'E-Bike Service Zürich – Mobile Velo & E-Bike Reparatur | VELOV',
+      intro: 'Professioneller E-Bike Service in Zürich direkt bei dir vor Ort. Wir warten alle Marken mechanisch: Bosch, Shimano, Yamaha & mehr. Transparente Preise, keine Anfahrtssorgen. Jetzt WhatsApp-Termin sichern!',
+      sections: [
+        { h2: 'Mobiler E-Bike Service in Zürich – wir kommen zu dir', body: 'VELOV bietet fachmännische E-Bike Wartung für alle gängigen Systeme. Wir erledigen alle mechanischen Arbeiten direkt vor deiner Haustür oder beim Büro.' },
+        { h2: 'Unsere E-Bike Leistungen', body: 'Bremsen einstellen, Schaltung optimieren, Kettenpflege und allgemeiner Sicherheitscheck für dein Elektrovelo.' }
+      ],
+      faqs: [{ q: 'Welche E-Bike Marken?', a: 'Wir warten alle Marken mechanisch: Bosch, Shimano, Yamaha, Specialized, uvm.' }],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV — Mobile E-Bike Service Zürich","url":"https://www.velov.ch/ebike","telephone":"+41762352126" }]
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"name":"VELOV — Mobile E-Bike Service Zürich","url":"https://www.velov.ch/ebike","telephone":"+41762352126","priceRange":"CHF 79 - CHF 229","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zürich","postalCode":"8032","addressCountry":"CH"}}]
     },
     ui: {
       faqLabel: 'Häufige Fragen',
@@ -135,12 +138,15 @@ const VELOV_LANG = {
   en: {
     seo: {
       id: 'ebike-en',
-      h1: 'E-Bike Service Zurich – Mobile Maintenance',
-      intro: 'Mobile e-bike service in Zurich for all brands: Bosch, Shimano, Yamaha.',
-      sections: [{ h2: 'E-Bike Service in Zurich', body: 'Mechanical maintenance for all brands at your location.' }],
-      faqs: [{ q: 'Which brands?', a: 'All mechanical: Bosch, Shimano, etc.' }],
+      h1: 'E-Bike Service Zurich – Mobile Velo & E-Bike Repair | VELOV',
+      intro: 'Expert e-bike service in Zurich at your doorstep. We maintain all brands mechanically: Bosch, Shimano, Yamaha & more. Fixed prices, zero hassle. Book your mobile e-bike repair now!',
+      sections: [
+        { h2: 'Mobile E-Bike Service Zurich – we come to you', body: 'VELOV provides professional e-bike maintenance for all common systems. We handle all mechanical tasks directly at your home or office.' },
+        { h2: 'Our E-Bike Services', body: 'Brake adjustments, gear tuning, chain care, and comprehensive safety checks for your electric bike.' }
+      ],
+      faqs: [{ q: 'Which e-bike brands?', a: 'We service all brands mechanically: Bosch, Shimano, Yamaha, Specialized, and many more.' }],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV — Mobile E-Bike Service Zurich","url":"https://www.velov.ch/en/ebike","telephone":"+41762352126" }]
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"name":"VELOV — Mobile E-Bike Service Zurich","url":"https://www.velov.ch/en/ebike","telephone":"+41762352126","priceRange":"CHF 79 - CHF 229","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressCountry":"CH"}}]
     },
     ui: {
       faqLabel: 'FAQ',
@@ -168,12 +174,15 @@ const VELOV_LANG = {
   es: {
     seo: {
       id: 'ebike-es',
-      h1: 'Servicio E-Bike Zúrich – Mantenimiento Móvil',
-      intro: 'Servicio e-bike móvil en Zúrich para todas las marcas.',
-      sections: [{ h2: 'Servicio E-Bike en Zúrich', body: 'Mantenimiento mecánico para todas las marcas.' }],
-      faqs: [{ q: '¿Qué marcas?', a: 'Todas mecánicamente: Bosch, Shimano, etc.' }],
+      h1: 'Servicio E-Bike Zúrich – Reparación de Bicicletas Eléctricas | VELOV',
+      intro: 'Servicio técnico de e-bike en Zúrich a domicilio. Mantenimiento mecánico para todas las marcas: Bosch, Shimano, Yamaha. Precios transparentes y rapidez. ¡Reserva por WhatsApp!',
+      sections: [
+        { h2: 'Servicio E-Bike móvil en Zúrich – vamos a donde estés', body: 'VELOV ofrece mantenimiento profesional para bicicletas eléctricas. Realizamos reparaciones mecánicas en tu domicilio u oficina.' },
+        { h2: 'Nuestros servicios e-bike', body: 'Ajuste de frenos, regulación de cambios, cuidado de cadena y chequeos de seguridad completos.' }
+      ],
+      faqs: [{ q: '¿Qué marcas de e-bike?', a: 'Atendemos todas las marcas mecánicamente: Bosch, Shimano, Yamaha, Specialized, y más.' }],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV — Servicio E-Bike Móvil Zúrich","url":"https://www.velov.ch/es/ebike","telephone":"+41762352126" }]
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"name":"VELOV — Servicio E-Bike Móvil Zúrich","url":"https://www.velov.ch/es/ebike","telephone":"+41762352126","priceRange":"CHF 79 - CHF 229","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zúrich","postalCode":"8032","addressCountry":"CH"}}]
     },
     ui: {
       faqLabel: 'Preguntas frecuentes',
@@ -201,12 +210,15 @@ const VELOV_LANG = {
   fr: {
     seo: {
       id: 'ebike-fr',
-      h1: 'Service E-Bike Zurich – Entretien Mobile',
-      intro: 'Service e-bike mobile à Zurich pour toutes les marques.',
-      sections: [{ h2: 'Service E-Bike à Zurich', body: 'Entretien mécanique pour toutes les marques.' }],
-      faqs: [{ q: 'Quelles marques ?', a: 'Toutes mécaniquement: Bosch, Shimano, etc.' }],
+      h1: 'Service E-Bike Zurich – Réparation de Vélos Électriques | VELOV',
+      intro: 'Service e-bike expert à Zurich directement chez vous. Entretien mécanique toutes marques : Bosch, Shimano, Yamaha. Prix fixes, service rapide. Prenez RDV via WhatsApp !',
+      sections: [
+        { h2: 'Service E-Bike mobile à Zurich – nous venons chez vous', body: 'VELOV propose un entretien professionnel pour votre vélo électrique. Nous effectuons toutes les réparations mécaniques à votre domicile ou au bureau.' },
+        { h2: 'Nos prestations E-Bike', body: 'Réglage des freins, dérailleur, entretien chaîne et contrôle de sécurité complet.' }
+      ],
+      faqs: [{ q: 'Quelles marques d\'e-bike ?', a: 'Nous entretenons toutes les marques mécaniquement : Bosch, Shimano, Yamaha, Specialized, etc.' }],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV — Service E-Bike Mobile Zurich","url":"https://www.velov.ch/fr/ebike","telephone":"+41762352126" }]
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"name":"VELOV — Service E-Bike Mobile Zurich","url":"https://www.velov.ch/fr/ebike","telephone":"+41762352126","priceRange":"CHF 79 - CHF 229","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressCountry":"CH"}}]
     },
     ui: {
       faqLabel: 'Questions fréquentes',
@@ -234,12 +246,15 @@ const VELOV_LANG = {
   it: {
     seo: {
       id: 'ebike-it',
-      h1: 'Servizio E-Bike Zurigo – Manutenzione Mobile',
-      intro: 'Servizio e-bike mobile a Zurigo per tutte le marche.',
-      sections: [{ h2: 'Servizio E-Bike a Zurigo', body: 'Manutenzione meccanica per tutte le marche.' }],
-      faqs: [{ q: 'Quali marche ?', a: 'Tutte meccanicamente: Bosch, Shimano, etc.' }],
+      h1: 'Servizio E-Bike Zurigo – Riparazione Bici Elettriche | VELOV',
+      intro: 'Servizio e-bike professionale a Zurigo direttamente da te. Manutenzione meccanica tutte le marche: Bosch, Shimano, Yamaha. Prezzi trasparenti. Prenota ora su WhatsApp!',
+      sections: [
+        { h2: 'Servizio E-Bike mobile a Zurigo – veniamo da te', body: 'VELOV offre manutenzione esperta per la tua bici elettrica. Eseguiamo riparazioni meccaniche direttamente a casa tua o in ufficio.' },
+        { h2: 'I nostri servizi e-bike', body: 'Regolazione freni, cambio, cura della catena e controllo sicurezza completo.' }
+      ],
+      faqs: [{ q: 'Quali marche di e-bike?', a: 'Manuteniamo tutte le marche meccanicamente: Bosch, Shimano, Yamaha, Specialized, e molte altre.' }],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch',
-      schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV — Servizio E-Bike Mobile Zurigo","url":"https://www.velov.ch/it/ebike","telephone":"+41762352126" }]
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"name":"VELOV — Servizio E-Bike Mobile Zurigo","url":"https://www.velov.ch/it/ebike","telephone":"+41762352126","priceRange":"CHF 79 - CHF 229","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurigo","postalCode":"8032","addressCountry":"CH"}}]
     },
     ui: {
       faqLabel: 'Domande frequenti',

@@ -132,8 +132,8 @@ const VP_LANG = {
   de: {
     seo: {
       id: 'pannendienst-de',
-      h1: 'Velo Pannendienst Zürich – Plattfuss-Notfall? Wir kommen in 60 Minuten',
-      intro: 'Plattfuss in Zürich? VELOV ist Zürichs schnellster mobiler Pannendienst. CHF 99 all-inclusive: Anfahrt, neuer Schlauch, Sicherheitscheck. WhatsApp uns – wir sind in der Regel in 60 Minuten bei dir.',
+      h1: 'Velo Pannendienst Zürich – Schnelle Plattfuss-Hilfe in 60 Min | VELOV',
+      intro: 'Plattfuss in Zürich? VELOV ist Zürichs schnellster mobiler Velo-Pannendienst. CHF 99 all-inclusive: Anfahrt, neuer Schlauch & Montage vor Ort. WhatsApp uns – wir sind in 60 Min bei dir!',
       sections: [
         { h2:'Velo Pannendienst Zürich – CHF 99 all-inclusive', body:'Ein Festpreis, keine versteckten Kosten. Wir kommen mit dem Service-Velo zu dir, wechseln den Schlauch, prüfen Reifen und Bremsen, und du fährst weiter. Reaktionszeit unter 60 Minuten in der Stadt Zürich.' },
         { h2:'Wie der Pannendienst abläuft', body:'1. WhatsApp uns Standort + Foto. 2. Wir bestätigen ETA. 3. Wir kommen, reparieren vor Ort, du bezahlst per TWINT. Du musst nicht einmal anwesend sein.',
@@ -231,8 +231,8 @@ const VP_LANG = {
   en: {
     seo: {
       id: 'emergency-en',
-      h1: 'Bike Emergency Service Zurich – Flat Tyre? We Come in 60 Minutes',
-      intro: 'Flat tyre in Zurich? VELOV is Zurich\'s fastest mobile bike emergency service. CHF 99 all-inclusive: travel, new inner tube, safety check. WhatsApp us — we\'re typically with you in 60 minutes.',
+      h1: 'Bike Emergency Service Zurich – Mobile Flat Tire Repair in 60 Min | VELOV',
+      intro: 'Flat tire in Zurich? VELOV is your fastest mobile bike emergency service. CHF 99 all-inclusive: travel, new inner tube & on-site fitting. WhatsApp us — we arrive in under 60 mins!',
       sections: [
         {h2:'Bike Emergency Service Zurich – CHF 99 All-Inclusive', body:'One fixed price, no hidden fees. We come to you with a service bike, replace the inner tube, check tyres and brakes, and you\'re back on the road. Response time under 60 minutes in Zurich city.'},
         {h2:'How the Emergency Service Works', body:'1. WhatsApp us your location and a photo. 2. We confirm ETA. 3. We come, repair on-site, you pay via TWINT. You don\'t even need to be present — just leave the bike accessible.',
@@ -330,8 +330,8 @@ const VP_LANG = {
   fr: {
     seo: {
       id: 'depannage-fr',
-      h1: 'Dépannage Vélo Zurich – Crevaison ? Nous arrivons en 60 minutes',
-      intro: 'Crevaison à Zurich ? VELOV est le service de dépannage vélo mobile le plus rapide de Zurich. CHF 99 tout inclus : déplacement, chambre à air neuve, contrôle de sécurité. WhatsApp — nous sommes généralement chez vous en 60 minutes.',
+      h1: 'Dépannage Vélo Zurich – Réparation Crevaison en 60 Min | VELOV',
+      intro: 'Crevaison à Zurich ? VELOV est le service de dépannage vélo mobile le plus rapide. CHF 99 tout inclus : trajet, chambre à air neuve & montage sur place. WhatsApp nous — arrivée en 60 min !',
       sections: [
         {h2:'Dépannage Vélo Zurich – CHF 99 Tout Inclus', body:'Un prix fixe, sans frais cachés. Nous venons avec notre vélo de service, remplaçons la chambre à air, contrôlons pneus et freins, et vous repartez. Délai d\'intervention sous 60 minutes en ville de Zurich.'},
         {h2:'Comment se Déroule le Dépannage', body:'1. Envoyez position + photo par WhatsApp. 2. Confirmation ETA. 3. Nous venons, réparons sur place, paiement TWINT. Pas besoin d\'être présent.',
@@ -429,8 +429,8 @@ const VP_LANG = {
   it: {
     seo: {
       id: 'emergenza-it',
-      h1: 'Servizio Emergenza Bici Zurigo – Foratura? Arriviamo in 60 Minuti',
-      intro: 'Foratura a Zurigo? VELOV è il servizio di emergenza bici mobile più rapido di Zurigo. CHF 99 tutto compreso: spostamento, camera d\'aria nuova, controllo sicurezza. WhatsApp — siamo da te di solito in 60 minuti.',
+      h1: 'Servizio Emergenza Bici Zurigo – Foratura Riparata in 60 Min | VELOV',
+      intro: 'Foratura a Zurigo? VELOV è il servizio di emergenza bici più rapido. CHF 99 tutto compreso: trasferta, camera d\'aria nuova e montaggio sul posto. WhatsApp — arriviamo in 60 minuti!',
       sections: [
         {h2:'Servizio Emergenza Bici Zurigo – CHF 99 Tutto Compreso', body:'Un prezzo fisso, nessun costo nascosto. Veniamo con la nostra bici di servizio, sostituiamo la camera d\'aria, controlliamo pneumatici e freni, e tu riparti. Tempo di intervento sotto 60 minuti in città.'},
         {h2:'Come Funziona il Servizio Emergenza', body:'1. Inviaci posizione + foto via WhatsApp. 2. Confermiamo l\'orario. 3. Veniamo, ripariamo sul posto, paghi via TWINT. Non devi nemmeno essere presente.',
@@ -528,8 +528,8 @@ const VP_LANG = {
   es: {
     seo: {
       id: 'asistencia-es',
-      h1: 'Asistencia Bici Zúrich – ¿Pinchazo? Llegamos en 60 Minutos',
-      intro: '¿Pinchazo en Zúrich? VELOV es el servicio de asistencia bici móvil más rápido de Zúrich. CHF 99 todo incluido: desplazamiento, cámara nueva, control de seguridad. WhatsApp — normalmente estamos contigo en 60 minutos.',
+      h1: 'Asistencia Bici Zúrich – Reparación de Pinchazos en 60 Min | VELOV',
+      intro: '¿Pinchazo en Zúrich? VELOV es el servicio de asistencia móvil más rápido. CHF 99 todo incluido: desplazamiento, cámara nueva y montaje en el sitio. ¡WhatsApp y llegamos en 60 min!',
       sections: [
         {h2:'Asistencia Bici Zúrich – CHF 99 Todo Incluido', body:'Un precio fijo, sin costes ocultos. Vamos a ti con nuestra bici de servicio, sustituimos la cámara, revisamos neumáticos y frenos, y vuelves a rodar. Tiempo de respuesta menos de 60 minutos en la ciudad.'},
         {h2:'Cómo Funciona la Asistencia', body:'1. Mándanos ubicación + foto por WhatsApp. 2. Confirmamos ETA. 3. Vamos, reparamos en el sitio, pagas con TWINT. No necesitas estar presente.',
