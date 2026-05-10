@@ -120,8 +120,8 @@ const VELOV_LANG = {
   de: {
     seo: {
       id: 'home-de',
-      h1: 'Mobiler Velomechaniker Zürich – wir kommen zu dir, dein Velo bleibt wo es ist',
-      intro: 'VELOV ist die mobile Velowerkstatt in Zürich. Wir reparieren dein Velo, E-Bike oder Cargo-Bike direkt vor Ort – zu Hause, im Büro, am See. 500+ Google-Bewertungen, 4,8 Sterne. Plattfuss-Reparatur ab CHF 99 inkl. Anfahrt.',
+      h1: 'Mobiler Velomechaniker Zürich – Velo & E-Bike Reparatur vor Ort | VELOV',
+      intro: 'VELOV ist die mobile Velowerkstatt in Zürich. Professionelle Velo- & E-Bike Reparatur direkt vor Ort – zu Hause oder im Büro. 500+ Google-Bewertungen, 4.8 Sterne. Platten-Fix ab CHF 99 inkl. Anfahrt. Jetzt Termin via WhatsApp buchen!',
       sections: [
         { h2: 'Mobile Velowerkstatt Zürich – Service direkt vor Ort', body: 'VELOV ist Zürichs bestbewertete mobile Velowerkstatt. Statt dein Velo in eine Werkstatt zu bringen, kommen wir mit unserem voll ausgestatteten Service-Bike zu dir. Du musst nicht einmal zu Hause sein – stell dein Velo ab, wir senden dir nach der Reparatur ein Foto. Wir bedienen alle 12 Zürcher Stadtkreise und die Agglomeration.' },
         { h2: 'Unsere Velo-Services in Zürich', body: 'Plattfuss-Reparatur (Pannendienst CHF 99 all-in), Mini Service (CHF 149), Full Service (CHF 179), E-Bike Service, Cargo-Bike Service, Bremsen-Justage, Schaltung einstellen, Kettenwechsel, Velo-Entsorgung. Wir reparieren rein mechanisch, alle Marken und Motoren-Systeme.' },
@@ -136,7 +136,7 @@ const VELOV_LANG = {
         { q: 'Wie zahle ich?', a: 'TWINT (bevorzugt), Bargeld, Rechnung auf Anfrage.' }
       ],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch · Merkurstrasse 56, 8032 Zürich',
-      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Mobile Velowerkstatt Zürich","url":"https://www.velov.ch","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zürich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"08:00","closes":"18:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"sameAs":["https://g.page/r/Cde-mb4tOTU-EAE"],"inLanguage":"de"}]
+      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Mobile Velowerkstatt Zürich","url":"https://www.velov.ch","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zürich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"08:00","closes":"20:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"sameAs":["https://g.page/r/Cde-mb4tOTU-EAE"],"inLanguage":"de"}]
     },
     ui: {
       faqLabel: 'Häufige Fragen',
@@ -255,8 +255,8 @@ const VELOV_LANG = {
   en: {
     seo: {
       id: 'home-en',
-      h1: 'Mobile Bike Repair Zurich – We Come to You, Your Bike Stays Where It Is',
-      intro: 'VELOV is the mobile bike workshop in Zurich. We repair your bike, e-bike or cargo bike on-site — at home, at the office, by the lake. 500+ Google reviews, 4.8 stars. Flat tyre repair from CHF 99 incl. travel.',
+      h1: 'Mobile Bike Repair Zurich – Professional On-Site Bicycle Service | VELOV',
+      intro: 'VELOV is the mobile bike workshop in Zurich. Expert on-site repair for bikes, e-bikes & cargo bikes. 500+ Google reviews, 4.8 stars. Flat tire fix from CHF 99 incl. travel. Book your appointment via WhatsApp in 5 mins!',
       sections: [
         { h2: 'Mobile Bike Workshop Zurich – Service at Your Doorstep', body: 'VELOV is Zurich\'s top-rated mobile bike repair service. Instead of dragging your bike to a workshop, we come to you with a fully equipped service bike. You don\'t even need to be home — leave your bike accessible and we\'ll send a photo when done. We serve all 12 districts of Zurich and the surrounding agglomeration.' },
         { h2: 'Our Bike Services in Zurich', body: 'Flat tyre repair (CHF 99 all-in), Mini Service (CHF 149), Full Service (CHF 179), e-bike service, cargo bike service, brake adjustment, gear tuning, chain replacement, bike disposal. All brands and motor systems.' },
@@ -271,7 +271,7 @@ const VELOV_LANG = {
         { q: 'How do I pay?', a: 'TWINT (preferred), cash, or invoice on request.' }
       ],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch · Merkurstrasse 56, 8032 Zurich',
-      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Mobile Bike Workshop Zurich","url":"https://www.velov.ch/en","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"08:00","closes":"18:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"en"}]
+      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Mobile Bike Workshop Zurich","url":"https://www.velov.ch/en","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"08:00","closes":"20:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"en"}]
     },
     ui: {
       faqLabel: 'Frequently Asked Questions',
@@ -390,8 +390,8 @@ const VELOV_LANG = {
   fr: {
     seo: {
       id: 'home-fr',
-      h1: 'Réparation Vélo Mobile Zurich – Nous venons chez vous, votre vélo reste où il est',
-      intro: 'VELOV est l\'atelier vélo mobile à Zurich. Nous réparons votre vélo, e-bike ou cargo bike directement sur place — à la maison, au bureau, au bord du lac. 500+ avis Google, 4,8 étoiles. Réparation de crevaison dès CHF 99 déplacement inclus.',
+      h1: 'Réparation Vélo Mobile Zurich – Service à Domicile Professionnel | VELOV',
+      intro: 'VELOV est l\'atelier vélo mobile à Zurich. Réparation professionnelle de vélos & e-bikes directement chez vous ou au bureau. 500+ avis Google, 4.8 étoiles. Réparation crevaison dès CHF 99. Réservez par WhatsApp en 5 min !',
       sections: [
         { h2: 'Atelier Vélo Mobile Zurich – Service à domicile', body: 'VELOV est le service de réparation vélo mobile le mieux noté de Zurich. Au lieu d\'apporter votre vélo à l\'atelier, nous venons chez vous avec un vélo de service entièrement équipé.' },
         { h2: 'Nos Services Vélo à Zurich', body: 'Réparation de crevaison (CHF 99 tout compris), Mini Service (CHF 149), Full Service (CHF 179), service e-bike, service cargo bike, réglage des freins, réglage des vitesses, remplacement de chaîne, élimination de vélo.' },
@@ -406,7 +406,7 @@ const VELOV_LANG = {
         { q: 'Comment payer ?', a: 'TWINT (préféré), espèces, ou facture sur demande.' }
       ],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch · Merkurstrasse 56, 8032 Zurich',
-      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Atelier Vélo Mobile Zurich","url":"https://www.velov.ch/fr","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"fr"}]
+      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Atelier Vélo Mobile Zurich","url":"https://www.velov.ch/fr","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"08:00","closes":"20:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"fr"}]
     },
     ui: {
       faqLabel: 'Questions fréquentes',
@@ -525,8 +525,8 @@ const VELOV_LANG = {
   it: {
     seo: {
       id: 'home-it',
-      h1: 'Riparazione Biciclette Mobile Zurigo – Veniamo da te, la tua bici resta dove si trova',
-      intro: 'VELOV è l\'officina mobile per biciclette a Zurigo. Ripariamo la tua bici, e-bike o cargo bike direttamente in loco — a casa, in ufficio, al lago. 500+ recensioni Google, 4,8 stelle. Riparazione foratura da CHF 99 incluso trasporto.',
+      h1: 'Riparazione Bici Mobile Zurigo – Servizio a Domicilio Professionale | VELOV',
+      intro: 'VELOV è l\'officina mobile per biciclette a Zurigo. Riparazione professionale bici & e-bike direttamente a casa o in ufficio. 500+ recensioni Google, 4.8 stelle. Foratura da CHF 99. Prenota via WhatsApp in 5 min!',
       sections: [
         { h2: 'Officina Mobile Biciclette Zurigo – Servizio a Domicilio', body: 'VELOV è il servizio di riparazione biciclette mobile più apprezzato di Zurigo. Invece di portare la tua bici in officina, veniamo da te con una bici di servizio completamente attrezzata.' },
         { h2: 'I Nostri Servizi Bici a Zurigo', body: 'Riparazione foratura (CHF 99 tutto incluso), Mini Service (CHF 149), Full Service (CHF 179), servizio e-bike, servizio cargo bike, regolazione freni, regolazione cambio, sostituzione catena, smaltimento biciclette.' },
@@ -541,7 +541,7 @@ const VELOV_LANG = {
         { q: 'Come si paga?', a: 'TWINT (preferito), contanti, o fattura su richiesta.' }
       ],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch · Merkurstrasse 56, 8032 Zurigo',
-      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Officina Mobile Biciclette Zurigo","url":"https://www.velov.ch/it","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurigo","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"it"}]
+      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Officina Mobile Biciclette Zurigo","url":"https://www.velov.ch/it","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurigo","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"08:00","closes":"20:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"it"}]
     },
     ui: {
       faqLabel: 'Domande frequenti',
@@ -660,8 +660,8 @@ const VELOV_LANG = {
   es: {
     seo: {
       id: 'home-es',
-      h1: 'Reparación de Bicicletas Zúrich – Mecánico Móvil a Domicilio',
-      intro: 'VELOV es el taller de bicicletas móvil en Zúrich. Reparamos tu bici, e-bike o cargo bike directamente donde estés — en casa, en la oficina, en el lago. 500+ reseñas en Google, 4,8 estrellas. Reparación de pinchazos desde CHF 99 desplazamiento incluido.',
+      h1: 'Reparación de Bicicletas Móvil Zúrich – Servicio a Domicilio | VELOV',
+      intro: 'VELOV es el taller de bicicletas móvil en Zúrich. Reparación profesional de bicicletas y e-bikes en tu domicilio u oficina. 500+ reseñas en Google, 4.8 estrellas. Pinchazos desde CHF 99. ¡Reserva por WhatsApp en 5 min!',
       sections: [
         { h2: 'Taller de Bicicletas Móvil Zúrich – Servicio a Domicilio', body: 'VELOV es el servicio de reparación de bicicletas móvil mejor valorado de Zúrich. En lugar de llevar tu bici al taller, vamos nosotros a ti con una bici de servicio totalmente equipada.' },
         { h2: 'Nuestros Servicios de Bici en Zúrich', body: 'Reparación de pinchazos (CHF 99 todo incluido), Mini Service (CHF 149), Full Service (CHF 179), servicio e-bike, servicio cargo bike, ajuste de frenos, regulación del cambio, sustitución de cadena, retirada de bicicletas.' },
@@ -676,7 +676,7 @@ const VELOV_LANG = {
         { q: '¿Cómo puedo pagar?', a: 'TWINT (preferido), efectivo, o factura bajo petición.' }
       ],
       contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch · Merkurstrasse 56, 8032 Zúrich',
-      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Taller de Bicicletas Móvil Zúrich","url":"https://www.velov.ch/es","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zúrich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"es"}]
+      schema: [{"@context":"https://schema.org","@type":["LocalBusiness","BicycleStore","AutoRepair"],"@id":"https://www.velov.ch/#business","name":"VELOV — Taller de Bicicletas Móvil Zúrich","url":"https://www.velov.ch/es","telephone":"+41762352126","email":"info@velov.ch","image":"https://www.velov.ch/og-image.jpg","priceRange":"CHF","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zúrich","postalCode":"8032","addressRegion":"ZH","addressCountry":"CH"},"geo":{"@type":"GeoCoordinates","latitude":47.3769,"longitude":8.5417},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"08:00","closes":"20:00"}],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","reviewCount":"500"},"inLanguage":"es"}]
     },
     ui: {
       faqLabel: 'Preguntas frecuentes',
@@ -919,14 +919,14 @@ class VelovHome extends HTMLElement {
       velov-home { display: block; width: 100%; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; color: #2D2B3D; box-sizing: border-box; }
       velov-home *, velov-home *::before, velov-home *::after { box-sizing: border-box; }
       .vh-wrap { max-width: 1200px; margin: 0 auto; padding: 56px 24px 128px; background: #F5F0EB; }
-      .vh-hero { background: linear-gradient(135deg, #7B68EE 0%, #9B88FF 60%, #B9AEFF 100%); color: #fff; padding: 128px 40px 112px; border-radius: 28px; text-align: center; position: relative; overflow: hidden; margin-bottom: 96px; }
-      .vh-hero::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(232,87,58,.3), transparent); border-radius: 50%; }
+      .vh-hero { background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 60%, #D8B4FE 100%); color: #fff; padding: 128px 40px 112px; border-radius: 28px; text-align: center; position: relative; overflow: hidden; margin-bottom: 96px; box-shadow: 0 20px 50px rgba(99, 102, 241, 0.2); }
+      .vh-hero::before { content: ''; position: absolute; top: -100px; right: -100px; width: 350px; height: 350px; background: radial-gradient(circle, rgba(245, 158, 11, 0.3), transparent); border-radius: 50%; filter: blur(40px); }
       .vh-hero h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -1.2px; margin: 0 0 28px; position: relative; line-height: 1.1; }
       .vh-hero .sub { font-size: 1.25rem; opacity: .95; margin: 0 auto 40px; max-width: 640px; position: relative; line-height: 1.55; }
       .vh-cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
       .vh-btn { padding: 16px 32px; border-radius: 999px; font-weight: 800; text-decoration: none; transition: transform .2s, box-shadow .2s; font-size: 1.05rem; display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer; font-family: inherit; }
-      .vh-btn-primary { background: #E8573A; color: #fff; box-shadow: 0 10px 30px rgba(232,87,58,.4); }
-      .vh-btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 14px 36px rgba(232,87,58,.5); }
+      .vh-btn-primary { background: #F59E0B; color: #fff; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4); text-transform: uppercase; letter-spacing: 0.5px; }
+      .vh-btn-primary:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 15px 40px rgba(245, 158, 11, 0.5); background: #FBBF24; }
       .vh-btn-ghost { background: rgba(255,255,255,.12); color: #fff; border: 2px solid rgba(255,255,255,.3); }
       .vh-btn-ghost:hover { background: rgba(255,255,255,.25); }
       .vh-live { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; background: rgba(255,255,255,.15); border-radius: 999px; margin-bottom: 20px; font-size: .95rem; font-weight: 600; position: relative; backdrop-filter: blur(10px); }
@@ -952,7 +952,7 @@ class VelovHome extends HTMLElement {
       .vh-probs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 24px; }
       .vh-prob { padding: 16px; border-radius: 14px; border: 2px solid #E8E3D9; background: #fff; cursor: pointer; text-align: left; transition: all .2s; font-family: inherit; }
       .vh-prob:hover { border-color: #7B68EE; transform: translateY(-2px); }
-      .vh-prob.selected { border-color: #E8573A; background: #FFF5F0; }
+      .vh-prob.selected { border-color: #8B5CF6; background: #F5F3FF; transform: scale(1.02); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1); }
       .vh-prob .icon { font-size: 1.5rem; display: block; margin-bottom: 6px; }
       .vh-prob .label { font-weight: 700; color: #2D2B3D; font-size: .95rem; }
       .vh-zones { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }

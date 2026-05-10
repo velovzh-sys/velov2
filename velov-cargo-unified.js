@@ -75,7 +75,14 @@
 /* ===== 3. MULTILINGUAL DATA ===== */
 const VELOV_LANG = {
   de: {
-    seo: { id: 'cargo-de', h1: 'Cargo-Bike Service Zürich', intro: 'Mobiler Cargo-Bike Service für alle Marken.', sections: [{ h2: 'Service Zürich', body: 'Spezialisiert auf Lastenräder.' }], faqs: [{ q: 'Welche Marken?', a: 'Alle mechanisch.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zürich" }] },
+    seo: {
+      id: 'cargo-de',
+      h1: 'Cargo-Bike Service Zürich – Mobile Lastenrad Reparatur | VELOV',
+      intro: 'Mobiler Cargo-Bike Service in Zürich für alle Marken: Urban Arrow, Babboe, Riese & Müller. Wir reparieren dein Lastenrad direkt vor Ort. Transparente Festpreise. Jetzt WhatsApp-Termin buchen!',
+      sections: [{ h2: 'Fachmännische Cargo-Bike Reparatur in Zürich', body: 'Spezialisiert auf Lastenräder kommen wir direkt zu dir nach Hause oder ins Büro.' }],
+      faqs: [{ q: 'Welche Lastenrad-Marken?', a: 'Wir warten alle Marken mechanisch: Urban Arrow, Babboe, Tern, uvm.' }],
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore"],"name":"VELOV Cargo Zürich","url":"https://www.velov.ch/cargo","telephone":"+41762352126","priceRange":"CHF 99 - CHF 259","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zürich","postalCode":"8032","addressCountry":"CH"}}]
+    },
     ui: {
       badge: 'Mobiler Cargo-Bike-Service · ganz Zürich',
       heroH1: 'Cargo Bike Reparatur <span class="v-grad">direkt bei dir</span> in Zürich',
@@ -103,7 +110,14 @@ const VELOV_LANG = {
     }
   },
   en: {
-    seo: { id: 'cargo-en', h1: 'Cargo Bike Service Zurich', intro: 'Mobile cargo bike service for all brands.', sections: [{ h2: 'Service Zurich', body: 'Specialized in cargo bikes.' }], faqs: [{ q: 'Which brands?', a: 'All mechanical.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurich" }] },
+    seo: {
+      id: 'cargo-en',
+      h1: 'Cargo Bike Service Zurich – Mobile Cargo Bicycle Repair | VELOV',
+      intro: 'Expert mobile cargo bike service in Zurich for all brands: Urban Arrow, Babboe, Riese & Müller. We repair your cargo bike at your location. Fixed prices. Book your service via WhatsApp!',
+      sections: [{ h2: 'Professional Cargo Bike Repair in Zurich', body: 'Specialized in heavy-duty bikes, we bring the workshop to you.' }],
+      faqs: [{ q: 'Which cargo bike brands?', a: 'We maintain all brands mechanically: Urban Arrow, Babboe, Tern, and more.' }],
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore"],"name":"VELOV Cargo Zurich","url":"https://www.velov.ch/en/cargo","telephone":"+41762352126","priceRange":"CHF 99 - CHF 259","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressCountry":"CH"}}]
+    },
     ui: {
       badge: 'Mobile Cargo Bike Service · all over Zurich',
       heroH1: 'Cargo Bike Repair <span class="v-grad">right at your door</span> in Zurich',
@@ -131,7 +145,14 @@ const VELOV_LANG = {
     }
   },
   es: {
-    seo: { id: 'cargo-es', h1: 'Servicio Cargo Bike Zúrich', intro: 'Servicio cargo bike móvil para todas las marcas.', sections: [{ h2: 'Servicio Zúrich', body: 'Especialistas en cargo bikes.' }], faqs: [{ q: '¿Qué marcas?', a: 'Todas mecánicamente.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zúrich" }] },
+    seo: {
+      id: 'cargo-es',
+      h1: 'Servicio Cargo Bike Zúrich – Reparación de Bicicletas de Carga | VELOV',
+      intro: 'Servicio técnico móvil para bicicletas de carga en Zúrich. Todas las marcas: Urban Arrow, Babboe, Riese & Müller. Reparación a domicilio con precios fijos. ¡Reserva por WhatsApp!',
+      sections: [{ h2: 'Reparación experta de Cargo Bikes en Zúrich', body: 'Especialistas en bicis de carga, vamos directamente a tu ubicación.' }],
+      faqs: [{ q: '¿Qué marcas de cargo bike?', a: 'Atendemos todas las marcas mecánicamente: Urban Arrow, Babboe, Tern, etc.' }],
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore"],"name":"VELOV Cargo Zúrich","url":"https://www.velov.ch/es/cargo","telephone":"+41762352126","priceRange":"CHF 99 - CHF 259","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zúrich","postalCode":"8032","addressCountry":"CH"}}]
+    },
     ui: {
       badge: 'Servicio Cargo Bike Móvil · todo Zúrich',
       heroH1: 'Reparación de Cargo Bike <span class="v-grad">directo a ti</span> en Zúrich',
@@ -159,7 +180,14 @@ const VELOV_LANG = {
     }
   },
   fr: {
-    seo: { id: 'cargo-fr', h1: 'Service Vélo Cargo Zurich', intro: 'Service vélo cargo mobile pour toutes les marques.', sections: [{ h2: 'Service Zurich', body: 'Spécialistes vélo cargo.' }], faqs: [{ q: 'Quelles marques ?', a: 'Toutes mécaniquement.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurich" }] },
+    seo: {
+      id: 'cargo-fr',
+      h1: 'Service Vélo Cargo Zurich – Réparation Mobile de Vélos Cargo | VELOV',
+      intro: 'Service expert mobile pour vélos cargo à Zurich. Toutes marques : Urban Arrow, Babboe, Riese & Müller. Nous réparons chez vous à prix fixe. Prenez RDV via WhatsApp !',
+      sections: [{ h2: 'Réparation Professionnelle de Vélos Cargo à Zurich', body: 'Spécialistes des vélos de transport, nous venons directement chez vous.' }],
+      faqs: [{ q: 'Quelles marques de vélo cargo ?', a: 'Nous entretenons toutes les marques mécaniquement : Urban Arrow, Babboe, Tern, etc.' }],
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore"],"name":"VELOV Cargo Zurich","url":"https://www.velov.ch/fr/cargo","telephone":"+41762352126","priceRange":"CHF 99 - CHF 259","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurich","postalCode":"8032","addressCountry":"CH"}}]
+    },
     ui: {
       badge: 'Service Vélo Cargo Mobile · tout Zurich',
       heroH1: 'Réparation Vélo Cargo <span class="v-grad">chez vous</span> à Zurich',
@@ -187,7 +215,14 @@ const VELOV_LANG = {
     }
   },
   it: {
-    seo: { id: 'cargo-it', h1: 'Servizio Cargo Bike Zurigo', intro: 'Servizio cargo bike mobile per tutte le marche.', sections: [{ h2: 'Servizio Zurigo', body: 'Specialisti in cargo bike.' }], faqs: [{ q: 'Quali marche ?', a: 'Tutte meccanicamente.' }], schema: [{ "@context":"https://schema.org","@type":"LocalBusiness","name":"VELOV Cargo Zurigo" }] },
+    seo: {
+      id: 'cargo-it',
+      h1: 'Servizio Cargo Bike Zurigo – Riparazione Bici da Carico Mobile | VELOV',
+      intro: 'Servizio professionale mobile per bici da carico a Zurigo. Tutte le marche: Urban Arrow, Babboe, Riese & Müller. Riparazione a domicilio, prezzi trasparenti. Prenota ora su WhatsApp!',
+      sections: [{ h2: 'Riparazione Esperta di Cargo Bike a Zurigo', body: 'Specialisti in bici da carico, portiamo l\'officina da te.' }],
+      faqs: [{ q: 'Quali marche di cargo bike?', a: 'Manuteniamo tutte le marche meccanicamente: Urban Arrow, Babboe, Tern, ecc.' }],
+      schema: [{ "@context":"https://schema.org","@type":["LocalBusiness","BicycleStore"],"name":"VELOV Cargo Zurigo","url":"https://www.velov.ch/it/cargo","telephone":"+41762352126","priceRange":"CHF 99 - CHF 259","address":{"@type":"PostalAddress","streetAddress":"Merkurstrasse 56","addressLocality":"Zurigo","postalCode":"8032","addressCountry":"CH"}}]
+    },
     ui: {
       badge: 'Servizio Cargo Bike Mobile · tutta Zurigo',
       heroH1: 'Riparazione Cargo Bike <span class="v-grad">direttamente da te</span> a Zurigo',

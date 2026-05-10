@@ -128,8 +128,8 @@ const VS_LANG = {
   de: {
     seo: {
       id: 'services-de',
-      h1: 'Velo Service Zürich – Mobile Velowerkstatt | VELOV',
-      intro: 'Alle Velo-Service-Pakete von VELOV für Zürich. Basic Check CHF 79, Standard Service CHF 179, Premium Service CHF 229. Mobil bei dir — Velo, E-Bike oder Cargo-Bike. Transparente Festpreise, keine versteckten Kosten.',
+      h1: 'Velo Service Zürich – Mobile Velo & E-Bike Wartung | VELOV',
+      intro: 'Alle Velo-Service-Pakete von VELOV in Zürich. Basic Check CHF 79, Standard Service CHF 179, Premium Service CHF 229. Mobil vor Ort – für Velo, E-Bike & Cargo-Bike. Transparente Festpreise, keine versteckten Kosten. Jetzt online anfragen!',
       sections: [
         { h2:'Service-Pakete im Überblick', body:'Drei klare Pakete für jeden Bedarf: Basic Check für schnellen Sicherheitscheck, Standard Service für gründliche Wartung, Premium Service für Komplettwartung inklusive Laufräder zentrieren. Alle Pakete mobil vor Ort in Zürich.',
           h3items:[
@@ -218,8 +218,8 @@ const VS_LANG = {
   en: {
     seo: {
       id: 'services-en',
-      h1: 'Bike Service Zurich – Mobile Bike Workshop | VELOV',
-      intro: 'All VELOV bike service packages for Zurich. Basic Check CHF 79, Standard Service CHF 179, Premium Service CHF 229. Mobile at your location — bike, e-bike or cargo bike. Transparent fixed prices, no hidden costs.',
+      h1: 'Bike Service Zurich – Mobile Velo & E-Bike Maintenance | VELOV',
+      intro: 'Explore all VELOV bike service packages in Zurich. Basic Check CHF 79, Standard Service CHF 179, Premium Service CHF 229. Mobile on-site service for bikes, e-bikes & cargo bikes. Transparent fixed prices. Book your service today!',
       sections: [
         { h2:'Service Packages Overview', body:'Three clear packages for every need: Basic Check for a quick safety inspection, Standard Service for thorough maintenance, Premium Service for a full overhaul including wheel truing. All packages mobile on-site in Zurich.',
           h3items:[
@@ -308,8 +308,8 @@ const VS_LANG = {
   fr: {
     seo: {
       id: 'services-fr',
-      h1: 'Service Vélo Zurich – Atelier Mobile | VELOV',
-      intro: 'Tous les forfaits service vélo VELOV pour Zurich. Basic Check CHF 79, Service Standard CHF 179, Service Premium CHF 229. Mobile chez vous — vélo, e-bike ou cargo bike. Prix fixes transparents, sans frais cachés.',
+      h1: 'Service Vélo Zurich – Entretien Mobile Vélos & E-Bikes | VELOV',
+      intro: 'Découvrez les forfaits service vélo VELOV à Zurich. Basic Check CHF 79, Service Standard CHF 179, Service Premium CHF 229. Service mobile à domicile pour vélos, e-bikes & vélos cargo. Prix fixes transparents. Réservez maintenant !',
       sections: [
         { h2:'Aperçu des Forfaits', body:'Trois forfaits clairs pour chaque besoin : Basic Check pour un contrôle de sécurité rapide, Service Standard pour une maintenance complète, Service Premium pour une révision totale avec centrage des roues.',
           h3items:[
@@ -397,8 +397,8 @@ const VS_LANG = {
   it: {
     seo: {
       id: 'services-it',
-      h1: 'Servizio Bici Zurigo – Officina Mobile | VELOV',
-      intro: 'Tutti i pacchetti servizio bici VELOV per Zurigo. Basic Check CHF 79, Servizio Standard CHF 179, Servizio Premium CHF 229. Mobile da te — bici, e-bike o cargo bike. Prezzi fissi trasparenti, senza costi nascosti.',
+      h1: 'Servizio Bici Zurigo – Manutenzione Mobile Bici & E-Bike | VELOV',
+      intro: 'Tutti i pacchetti servizio bici VELOV a Zurigo. Basic Check CHF 79, Servizio Standard CHF 179, Servizio Premium CHF 229. Servizio mobile a domicilio per bici, e-bike & cargo bike. Prezzi fissi trasparenti. Prenota il tuo service!',
       sections: [
         { h2:'Panoramica dei Pacchetti', body:'Tre pacchetti chiari per ogni esigenza: Basic Check per un rapido controllo di sicurezza, Servizio Standard per una manutenzione completa, Servizio Premium per una revisione totale con centratura delle ruote.',
           h3items:[
@@ -486,8 +486,8 @@ const VS_LANG = {
   es: {
     seo: {
       id: 'services-es',
-      h1: 'Servicio Bici Zúrich – Taller Móvil | VELOV',
-      intro: 'Todos los paquetes de servicio bici VELOV para Zúrich. Basic Check CHF 79, Servicio Estándar CHF 179, Servicio Premium CHF 229. Móvil en tu ubicación — bici, e-bike o cargo bike. Precios fijos transparentes, sin costes ocultos.',
+      h1: 'Servicio Bici Zúrich – Mantenimiento Móvil de Bicicletas | VELOV',
+      intro: 'Todos los paquetes de servicio de bicicleta VELOV en Zúrich. Basic Check CHF 79, Servicio Estándar CHF 179, Servicio Premium CHF 229. Taller móvil para bicis, e-bikes y cargo bikes. Precios fijos sin sorpresas. ¡Reserva ya!',
       sections: [
         { h2:'Resumen de Paquetes', body:'Tres paquetes claros para cada necesidad: Basic Check para una inspección de seguridad rápida, Servicio Estándar para un mantenimiento completo, Servicio Premium para una revisión total con centrado de ruedas.',
           h3items:[

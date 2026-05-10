@@ -623,7 +623,7 @@ function _velovLocBuildSeo(lang) {
     h1: t.seoH1,
     intro: t.seoIntro,
     sections: [
-      { h2: t.pickerTitle, body: t.pickerLead, h3items: VELOV_LOC_ZONES.slice(0, 12).map(z => ({ h3: z.names[lang] || z.names.DE, body: z.jokes[lang] || z.jokes.DE })) }
+      { h2: t.pickerTitle, body: t.pickerLead, h3items: VELOV_LOC_ZONES.slice(0, 15).map(z => ({ h3: z.names[lang] || z.names.DE, body: z.jokes[lang] || z.jokes.DE })) }
     ],
     contact: 'WhatsApp +41 76 235 21 26 · info@velov.ch'
   };
