@@ -1034,7 +1034,6 @@ class VelovHome extends HTMLElement {
       .vh-finalcta .btn-wa { display: inline-flex; align-items: center; gap: 10px; background: #25D366; color: #fff; padding: 18px 36px; border-radius: 999px; font-weight: 800; text-decoration: none; font-size: 1.1rem; }
       .vh-finalcta .phone { display: block; margin-top: 20px; font-size: 1rem; opacity: .9; }
       .vh-finalcta .phone a { color: #fff; font-weight: 700; text-decoration: underline; }
-      .vh-float-wa { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; align-items: center; gap: 10px; background: #25D366; color: #fff; padding: 14px 22px; border-radius: 999px; font-weight: 800; text-decoration: none; box-shadow: 0 8px 24px rgba(37,211,102,.5); font-size: 1rem; }
       @media (max-width: 640px) {
         .vh-wrap { padding: 16px 12px 80px; }
         .vh-hero { padding: 40px 20px; border-radius: 20px; }
@@ -1227,10 +1226,6 @@ class VelovHome extends HTMLElement {
 
       </div>
 
-      <!-- FLOATING WHATSAPP -->
-      <a class="vh-float-wa" href="https://wa.me/${C.whatsapp}?text=${encodeURIComponent(UI.waMsg)}" target="_blank" rel="noopener">
-        💬 WhatsApp
-      </a>
     `;
   }
 
