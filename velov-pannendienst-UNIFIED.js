@@ -61,7 +61,7 @@
       var ex=document.getElementById(id); if(ex) ex.remove();
       var sc=document.createElement('script');
       sc.id=id; sc.type='application/ld+json';
-      try{sc.textContent=JSON.stringify(cfg.schema);}catch(e){return;}
+      try{var g={"@context":"https://schema.org","@graph":cfg.schema};sc.textContent=JSON.stringify(g);}catch(e){return;}
       document.head.appendChild(sc);
     }
   }
